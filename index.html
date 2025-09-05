@@ -15,7 +15,6 @@
         if (!skip && !played) {
           location.replace('intro.html');
         } else if (skip) {
-          // clean the URL
           url.searchParams.delete('skip-intro');
           history.replaceState(null, '', url);
         }
@@ -26,90 +25,7 @@
   <!-- Font & global styles -->
   <link href="https://fonts.cdnfonts.com/css/glacial-indifference" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-
-  <!-- GSAP -->
-  <script>
-// ----- PARALLAX: hero + VM section + featured cards -----
-if (window.gsap && window.ScrollTrigger) {
-  gsap.registerPlugin(ScrollTrigger);
-
-  // Hero: subtle lift as you scroll out of the hero
-  gsap.to(".home .home-logo", {
-    yPercent: -10,            // gentle upward drift
-    ease: "none",
-    scrollTrigger: {
-      trigger: ".hero",
-      start: "top top",
-      end: "bottom top",
-      scrub: true
-    }
-  });
-
-  gsap.to(".hero-particles span", {
-    yPercent: -20,            // particles move a bit more for depth
-    ease: "none",
-    scrollTrigger: {
-      trigger: ".hero",
-      start: "top top",
-      end: "bottom top",
-      scrub: true
-    }
-  });
-
-  // VM images: opposing parallax (Vision up, Mission down)
-  gsap.utils.toArray(".vm-media .vm-art").forEach((el, i) => {
-    gsap.fromTo(
-      el,
-      { y: i % 2 ? 60 : -60 },   // alternate directions for depth
-      {
-        y: i % 2 ? -60 : 60,
-        ease: "none",
-        scrollTrigger: {
-          trigger: el,
-          start: "top bottom",   // when it enters viewport
-          end: "bottom top",     // until it passes out
-          scrub: true
-        }
-      }
-    );
-  });
-
-  // VM copy: soft fade/slide-in once (not scrubbed)
-  gsap.utils.toArray(".vm-copy").forEach((el) => {
-    gsap.from(el, {
-      y: 40,
-      autoAlpha: 0,
-      duration: 0.8,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: el,
-        start: "top 80%",      // when near viewport
-        toggleActions: "play none none reverse"
-      }
-    });
-  });
-
-  // Featured cards art: tiny parallax scale for texture
-  gsap.utils.toArray(".featured .art").forEach((el) => {
-    gsap.fromTo(
-      el,
-      { y: 30, scale: 1.02 },
-      {
-        y: -30,
-        scale: 1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: el,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true
-        }
-      }
-    );
-  });
-}
-</script>
-
+</head>
 
 <body class="home">
   <!-- HEADER -->
@@ -155,7 +71,6 @@ if (window.gsap && window.ScrollTrigger) {
         </div>
       </section>
 
-      <!-- Decorative scroll cue -->
       <div class="scrolldown" aria-hidden="true"><span></span></div>
     </main>
 
@@ -193,7 +108,7 @@ if (window.gsap && window.ScrollTrigger) {
       </div>
     </section>
 
-    <!-- FEATURED -->
+    <!-- FEATURED (Recent) -->
     <section id="featured" class="featured snap">
       <div class="brand-lock" aria-hidden="true">
         <img src="assets/web/logohome.png" alt="" />
@@ -206,20 +121,8 @@ if (window.gsap && window.ScrollTrigger) {
           <p>Recent nights captured by NOCHARTE</p>
         </div>
 
-        <div class="grid">
-          <a class="card" href="gallery.html">
-            <div class="art"></div>
-            <div class="meta"><strong>Ibiza Lights</strong><span>Jul 2025 • 128 photos</span></div>
-          </a>
-          <a class="card" href="gallery.html">
-            <div class="art"></div>
-            <div class="meta"><strong>Neon Pulse</strong><span>Jun 2025 • 96 photos</span></div>
-          </a>
-          <a class="card" href="gallery.html">
-            <div class="art"></div>
-            <div class="meta"><strong>Midnight Crowd</strong><span>May 2025 • 142 photos</span></div>
-          </a>
-        </div>
+        <!-- Cards injected here -->
+        <div class="grid" id="recent-albums"></div>
 
         <div class="more">
           <a class="btn btn--outline" href="gallery.html">Open Full Gallery</a>
@@ -230,16 +133,73 @@ if (window.gsap && window.ScrollTrigger) {
 
   <!-- JS -->
   <script>
-    // Reveal headline words
+    // ----- OPTIONAL: GSAP parallax/scroll if GSAP exists -----
+    if (window.gsap && window.ScrollTrigger) {
+      gsap.registerPlugin(ScrollTrigger);
+
+      gsap.to(".home .home-logo", {
+        yPercent: -10, ease: "none",
+        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+      });
+
+      gsap.to(".hero-particles span", {
+        yPercent: -20, ease: "none",
+        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+      });
+
+      gsap.utils.toArray(".vm-media .vm-art").forEach((el, i) => {
+        gsap.fromTo(el, { y: i % 2 ? 60 : -60 }, {
+          y: i % 2 ? -60 : 60, ease: "none",
+          scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true }
+        });
+      });
+
+      gsap.utils.toArray(".vm-copy").forEach((el) => {
+        gsap.from(el, {
+          y: 40, autoAlpha: 0, duration: 0.8, ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 80%", toggleActions: "play none none reverse" }
+        });
+      });
+
+      gsap.utils.toArray(".featured .art").forEach((el) => {
+        gsap.fromTo(el, { y: 30, scale: 1.02 }, {
+          y: -30, scale: 1, ease: "none",
+          scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true }
+        });
+      });
+
+      // Brand lock triggers
+      gsap.registerPlugin(ScrollTrigger);
+      ScrollTrigger.create({
+        trigger: "#featured",
+        start: "top center",
+        onEnter: () =>
+          gsap.to("#headline", {
+            scale: 0.38, x: -40, y: -60, transformOrigin: "left top",
+            duration: 0.8, ease: "power3.out",
+          }),
+        onLeaveBack: () =>
+          gsap.to("#headline", { scale: 1, x: 0, y: 0, duration: 0.8, ease: "power3.out" }),
+      });
+      ScrollTrigger.create({
+        trigger: "#featured",
+        start: "top center",
+        onEnter: () => gsap.to(".brand-lock", { autoAlpha: 1, y: 0, duration: 0.6 }),
+        onLeaveBack: () => gsap.to(".brand-lock", { autoAlpha: 0, y: -20, duration: 0.4 }),
+      });
+    }
+
+    // Reveal headline words (works with or without GSAP)
     function runHeroReveal() {
       const words = document.querySelectorAll(".headline .hword");
       if (window.gsap) gsap.from(words, { y: 40, autoAlpha: 0, stagger: 0.12, duration: 0.9, ease: "power3.out" });
     }
     window.addEventListener("load", runHeroReveal);
 
-    // Parallax (vertical only)
+    // Simple parallax (mouse/scroll) without external libs
     (function parallax() {
       const scene = document.getElementById("scene");
+      if (!scene) return;
       const layers = [...scene.querySelectorAll(".layer")];
       let cy = innerHeight / 2, my = 0;
 
@@ -258,30 +218,7 @@ if (window.gsap && window.ScrollTrigger) {
       );
     })();
 
-    // Brand lock triggers
-    if (window.gsap && window.ScrollTrigger){
-      gsap.registerPlugin(ScrollTrigger);
-      ScrollTrigger.create({
-        trigger: "#featured",
-        start: "top center",
-        onEnter: () =>
-          gsap.to("#headline", {
-            scale: 0.38, x: -40, y: -60,
-            transformOrigin: "left top",
-            duration: 0.8, ease: "power3.out",
-          }),
-        onLeaveBack: () =>
-          gsap.to("#headline", { scale: 1, x: 0, y: 0, duration: 0.8, ease: "power3.out" }),
-      });
-      ScrollTrigger.create({
-        trigger: "#featured",
-        start: "top center",
-        onEnter: () => gsap.to(".brand-lock", { autoAlpha: 1, y: 0, duration: 0.6 }),
-        onLeaveBack: () => gsap.to(".brand-lock", { autoAlpha: 0, y: -20, duration: 0.4 }),
-      });
-    }
-
-    // Morph from intro: glide the logo from intro.html position to its spot here
+    // Morph from intro
     (function(){
       try{
         const raw = sessionStorage.getItem('nocharte_morph');
@@ -292,9 +229,7 @@ if (window.gsap && window.ScrollTrigger) {
         const logo = document.getElementById('homeLogo');
         if(!logo) return;
 
-        // prevent early flash
         logo.style.opacity = '0';
-
         const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
         const dst = logo.getBoundingClientRect();
         const dstCx = dst.left + dst.width/2;
@@ -325,6 +260,54 @@ if (window.gsap && window.ScrollTrigger) {
           }
         });
       }catch(e){}
+    })();
+
+    // -------- Recent Albums (REAL DATA) --------
+    (function(){
+      // If you already have window.ALBUMS from another file, it will use that.
+      const albums = (window.ALBUMS || [
+        {
+          title: "La Gloria — 23 Aug 2025",
+          dateISO: "2025-08-23",
+          photos: 52,
+          cover: "albums/la-gloria-2025-08-23/cover.jpg",
+          url:   "album-la-gloria-2025-08-23.html"
+        },
+        {
+          title: "Luna — 19 Jul 2025",
+          dateISO: "2025-07-19",
+          photos: 7,
+          cover: "albums/luna-2025-07-19/cover.jpg",
+          url:   "album-luna-2025-07-19.html"
+        },
+        {
+          title: "Neon Pulse — 14 Jun 2025",
+          dateISO: "2025-06-14",
+          photos: 96,
+          cover: "albums/neon-pulse-2025-06-14/cover.jpg",
+          url:   "album-neon-pulse-2025-06-14.html"
+        }
+        // Add more as you publish; newest 3 will show automatically
+      ]);
+
+      const recent = [...albums]
+        .sort((a,b)=> new Date(b.dateISO) - new Date(a.dateISO))
+        .slice(0,3);
+
+      const grid = document.getElementById('recent-albums');
+      if (!grid) return;
+
+      grid.innerHTML = recent.map(a => `
+        <a class="card" href="${a.url}" aria-label="Open ${a.title}">
+          <div class="art">
+            <img src="${a.cover}" alt="${a.title}" loading="lazy" />
+          </div>
+          <div class="meta">
+            <strong>${a.title.split(' — ')[0]}</strong>
+            <span>${new Date(a.dateISO).toLocaleString('en-US',{month:'short', year:'numeric'})} • ${a.photos} photos</span>
+          </div>
+        </a>
+      `).join('');
     })();
   </script>
 </body>
