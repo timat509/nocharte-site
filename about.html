@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NOCHARTE — About</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Global styles (header, base, etc.) -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- Page-scoped styles -->
+  <link rel="stylesheet" href="about.css" />
+</head>
+
+<body class="page-about">
+  <!-- SHARED HEADER (same on every page) -->
+  <header class="nav">
+    <a class="logo" href="index.html" aria-label="NOCHARTE Home">
+      <img src="assets/web/logohome.png" alt="NOCHARTE">
+    </a>
+    <nav class="links" role="navigation">
+      <a href="index.html" data-nav="home">Home</a>
+      <a href="gallery.html" data-nav="gallery">Gallery</a>
+      <a href="about.html" data-nav="about" aria-current="page">About</a>
+      <a href="contact.html" data-nav="contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero wrap">
+      <h1 class="title title-row-1" aria-hidden="true">
+        <span class="who">WHO</span><span class="are">WE</span>
+      </h1>
+      <div class="title title-row-2" aria-hidden="true">
+        <span class="we">ARE</span><span class="qmark">?</span>
+      </div>
+
+      <aside class="media">
+        <img class="cams cutout" src="assets/web/aboutcamera.png" alt="NOCHARTE cameras" />
+      </aside>
+
+      <p class="tagline">BORN ON THE DANCEFLOOR · BUILT TO BE REMEMBERED.</p>
+
+      <div class="cta-col">
+        <a class="cta" href="#story" id="cta-story">
+          <span class="dot" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+              <path d="M7 17 H17 V7" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M7 7 L17 17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="label">OUR STORY</span>
+        </a>
+
+        <a class="cta" href="#work" id="cta-work">
+          <span class="dot" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+              <path d="M7 17 H17 V7" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M7 7 L17 17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="label">OUR WORK</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- OUR STORY -->
+    <section id="story" class="section wrap story anchor-target">
+      <div class="story-grid">
+        <figure class="story-media">
+          <img src="assets/albums/luna-19-07-25/photos/luna1.png" alt="Crowd on a club night captured by NOCHARTE">
+        </figure>
+        <div class="story-copy">
+          <h2 class="sec-title right"><span class="title-hit">OUR STORY</span></h2>
+          <p><strong>NOCHARTE</strong> started with one idea: the right photo doesn’t just capture a night—it extends it. We shoot fast, blend into the energy, and grade with precision so the images feel as good as the moment itself. The result: unforgettable sets people rush to share, and visuals that make clubs and brands look untouchable.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW WE WORK -->
+    <section id="work" class="section wrap work anchor-target">
+      <div class="work-grid">
+        <h2 class="sec-title"><span class="title-hit">HOW WE WORK</span></h2>
+        <div class="work-cols">
+          <div class="work-item">
+            <h3>Shoot in the Flow</h3>
+            <p>We embed with the crowd and talent so every frame feels lived-in, not staged.</p>
+          </div>
+          <div class="work-item">
+            <h3>Grade for the Night</h3>
+            <p>Tailored color that keeps the neon alive and skin tones true across socials.</p>
+          </div>
+          <div class="work-item">
+            <h3>Deliver Fast</h3>
+            <p>Same-night selects for socials, full set within 48 hours—ready for brand use.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+(function () {
+  document.addEventListener('click', function (e) {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+
+    // ignore modified clicks / new-tab / non-HTTP links
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.target === '_blank') return;
+
+    const href = a.getAttribute('href') || '';
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
+
+    const url = new URL(href, location.href);
+    if (url.origin !== location.origin) return; // external
+
+    // Internal nav → add one-time flag and navigate
+    e.preventDefault();
+    url.searchParams.set('skip-intro', '1');
+    location.assign(url.href);
+  }, { capture: true });
+})();
+</script>
+</body>
+</html>

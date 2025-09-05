@@ -1,0 +1,431 @@
+/* =========================================================
+   BASE RESET & THEME
+========================================================= */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;width:100%}
+html{scroll-behavior:smooth}
+img,svg{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration:none}
+
+/* Never allow horizontal scroll / clipping */
+html,body{max-width:100%;overflow-x:hidden}
+@supports (overflow-x:clip){ html,body{overflow-x:clip} }
+
+/* Theme tokens */
+:root{
+  --bg:#000;
+  --text:#f5f5f7;
+  --muted:#b9b9c2;
+
+  /* Header */
+  --logo-h: clamp(56px, 5vw, 100px);
+  --nav-h: var(--logo-h);
+
+  /* VM section colors */
+  --vm-text:#eae8ef; 
+  --vm-muted:#b6b2c6; 
+  --card:#14121c;
+}
+
+/* Global canvas */
+html,body{background:var(--bg);color:var(--text);font-family:'Glacial Indifference',sans-serif}
+
+/* Skip-intro helper */
+.skip-intro #intro{display:none!important}
+.skip-intro .home-logo{opacity:1!important}
+
+/* =========================================================
+   GLOBAL HEADER (shared on all pages)
+========================================================= */
+.nav{
+  position:sticky;top:0;left:0;right:0;z-index:5000;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;background:#000;border:none;box-shadow:none;
+  backdrop-filter:none;-webkit-backdrop-filter:none;overflow:visible;
+}
+.nav::before{display:none}
+
+.logo{display:flex;align-items:center;line-height:0}
+.logo img{height:var(--logo-h);width:auto}
+
+.brand{display:flex;align-items:center;font:800 18px/1 Inter,system-ui,sans-serif;letter-spacing:.06em;white-space:nowrap}
+/* If a page uses .brand img instead of .logo img, normalize */
+.nav .brand img{height:var(--logo-h);width:auto;display:block}
+
+.links{display:flex;gap:44px;align-items:center;font:700 18px/1.2 Inter,system-ui,sans-serif}
+.links a{
+  position:relative;display:inline-block;padding:6px 2px;
+  color:#f5f5f7;letter-spacing:.02em;opacity:.95;transition:opacity .2s ease;
+}
+.links a:hover{opacity:1}
+.links a::after{
+  content:"";position:absolute;left:0;right:0;bottom:-6px;height:4px;
+  background:linear-gradient(90deg,#d400ff,#7400ff);
+  border-radius:3px;transform:scaleX(0);transform-origin:left;
+  transition:transform .35s ease,opacity .35s ease;opacity:0;
+}
+.links a:hover::after,
+.links a:focus-visible::after,
+.links a.active::after,
+.links a[aria-current="page"]::after{transform:scaleX(1);opacity:1}
+
+/* Anchor offset helper (if used for #ids) */
+.anchor-target{scroll-margin-top:calc(var(--nav-h) + 16px)}
+
+/* =========================================================
+   INTRO (minimal, pure black)
+========================================================= */
+#intro{
+  position:fixed;inset:0;z-index:2000;display:grid;place-items:center;
+  background:#000;overflow:hidden
+}
+.intro-bg{position:absolute;inset:0}
+.intro-particles span{
+  position:absolute;width:3px;height:3px;border-radius:50%;
+  background:#fff;opacity:.55;filter:blur(.3px)
+}
+.intro-center{position:relative;width:min(540px,70vw);height:min(420px,54vw);display:grid;place-items:center}
+.intro-logo{width:min(160px,24vw);opacity:0;filter:drop-shadow(0 8px 24px rgba(0,0,0,.45))}
+.intro-type{
+  position:absolute;bottom:16%;left:50%;transform:translateX(-50%);
+  font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  font-size:clamp(36px,6vw,84px);color:#fff;opacity:0;--clip:0
+}
+/* Scope the old beams to HOME only so they never affect the separate intro page */
+body.home .beams{pointer-events:none;position:absolute;inset:0;display:grid;place-items:center}
+body.home .beams span{
+  position:absolute;height:2px;width:0;opacity:0;transform-origin:left center;transform:rotate(var(--a)) translateZ(0);
+  background:linear-gradient(90deg,rgba(212,3,224,0),rgba(212,3,224,.9),rgba(212,3,224,0));
+  filter:blur(.4px)
+}
+
+
+/* =========================================================
+   HOME (scoped rules — only when <body class="home">)
+========================================================= */
+body.home .hero{
+  position:relative;height:100vh;width:100%;
+  isolation:isolate;overflow:hidden;
+  contain:layout paint style;              /* stops side overflow */
+}
+body.home .layer{position:absolute;inset:0;will-change:transform;transform:translate3d(0,0,0);left:0;right:0}
+body.home .bg{background:#000}
+body.home .vignette{background:none}
+
+/* Stars on black */
+body.home .hero-particles span{
+  position:absolute;width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,.75);opacity:.55;filter:blur(.3px);
+  top:var(--t);left:var(--l);animation:float 8s ease-in-out infinite
+}
+body.home .hero-particles span:nth-child(1){--t:18%;--l:12%}
+body.home .hero-particles span:nth-child(2){--t:32%;--l:28%}
+body.home .hero-particles span:nth-child(3){--t:48%;--l:10%}
+body.home .hero-particles span:nth-child(4){--t:64%;--l:22%}
+body.home .hero-particles span:nth-child(5){--t:76%;--l:16%}
+body.home .hero-particles span:nth-child(6){--t:24%;--l:72%}
+body.home .hero-particles span:nth-child(7){--t:40%;--l:82%}
+body.home .hero-particles span:nth-child(8){--t:56%;--l:66%}
+body.home .hero-particles span:nth-child(9){--t:70%;--l:86%}
+body.home .hero-particles span:nth-child(10){--t:84%;--l:60%}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* Right-side big N */
+body.home .logo-holder{
+  display:flex;align-items:flex-start;justify-content:flex-end;
+  padding-top:8vh;padding-right:6vw;pointer-events:none;z-index:1
+}
+body.home .home-logo{
+  width:clamp(300px,36vw,720px);
+  height:auto;opacity:1;filter:none           /* no extra glow */
+}
+
+/* Left-side stacked headline + CTA */
+body.home .content{
+  position:relative;z-index:5;display:flex;flex-direction:column;align-items:flex-start;
+  gap:.08em;padding:0 8vw;max-width:min(1200px,92vw)
+}
+body.home .content.lowered{padding-top:4vh}    /* tight to header */
+
+body.home .headline{display:flex;flex-direction:column;gap:.08em;line-height:.92}
+body.home .headline .hword{
+  display:block;text-transform:uppercase;letter-spacing:.02em;
+  font-weight:800;font-size:clamp(52px,9.8vw,164px)
+}
+body.home .fill{color:#fff;text-shadow:none}
+body.home .gradient{
+  background:linear-gradient(180deg,#d400ff,#7400ff);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  filter:drop-shadow(0 18px 40px rgba(116,0,255,.30))
+}
+body.home .ind-1{margin-left:6vw}
+body.home .ind-2{margin-left:12vw}
+
+body.home .kicker{margin:4px 0 12px;font-size:clamp(13px,1.05vw,18px);letter-spacing:.12em;text-transform:uppercase;color:#e8e8e8}
+body.home .btn{
+  display:inline-block;padding:14px 28px;border-radius:999px;background:#d403e0;color:#fff;font-weight:700;font-size:1.05rem;
+  box-shadow:0 10px 30px rgba(212,3,224,.25);transition:.25s
+}
+body.home .btn:hover{background:#fff;color:#d403e0}
+
+/* Scroll cue (decorative, not clickable) */
+body.home .scrolldown{
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:14vh;width:32px;height:48px;border-radius:24px;
+  border:2px solid rgba(255,255,255,.85);display:grid;place-items:center;
+  pointer-events:none;cursor:default
+}
+body.home .scrolldown span{
+  width:6px;height:10px;border-radius:3px;background:#fff;opacity:.9;animation:dot 1.4s ease-in-out infinite
+}
+@keyframes dot{0%{transform:translateY(-6px);opacity:.2}50%{transform:translateY(4px);opacity:1}100%{transform:translateY(-6px);opacity:.2}}
+
+/* =========================================================
+   HOME — FEATURED SECTION
+========================================================= */
+.featured{position:relative;min-height:100vh;display:flex;align-items:center;background:#000;contain:layout paint style}
+.featured__inner{width:100%;padding:0 8vw;max-width:1200px;margin:0 auto}
+.featured__head h2{font-size:clamp(28px,3.4vw,54px);margin:0 0 6px 0}
+.featured__head p{opacity:.85;margin:0 0 26px 0}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:26px}
+.card{
+  display:block;color:#fff;border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;overflow:hidden;background:#0b0b0b;transition:.25s
+}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 28px rgba(0,0,0,.5)}
+.art{aspect-ratio:16/10;background:#0f0f0f}
+.meta{padding:14px 16px}
+.meta strong{display:block;font-size:1.05rem}
+.meta span{opacity:.8;font-size:.9rem}
+
+/* Brand lock (shows when featured enters) */
+.brand-lock{position:sticky;top:16px;left:8vw;display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(-20px);z-index:2}
+.brand-lock img{width:28px;height:auto;filter:drop-shadow(0 4px 12px rgba(0,0,0,.35))}
+.brand-lock span{font-weight:700;letter-spacing:.08em}
+
+.more{margin-top:26px}
+.btn--outline{background:transparent;border:1.5px solid #fff}
+.btn--outline:hover{background:#fff;color:#000}
+
+/* =========================================================
+   HOME — VISION / MISSION
+========================================================= */
+.vm-section{
+  background:#000;color:var(--vm-text);
+  padding:clamp(48px,7vw,88px) 0;
+  min-height:100vh;display:flex;align-items:center;
+  contain:layout paint style
+}
+/* container width for VM section */
+.vm-section .container{width:min(1200px,92%);margin:0 auto}
+
+.vm-row{
+  display:grid;grid-template-columns:1.2fr 1fr;align-items:center;
+  gap:clamp(24px,4vw,48px);padding-block:clamp(24px,4vw,52px);
+  border-bottom:1px solid rgba(255,255,255,.06)
+}
+.vm-row:last-child{border-bottom:none}
+.vm-row--reverse{grid-template-columns:1fr 1.2fr}
+.vm-row--reverse .vm-copy{order:1}
+.vm-row--reverse .vm-media{order:2}
+
+/* Default frame style */
+.vm-art{
+  width:100%;aspect-ratio:16/10;border-radius:22px;
+  background:#0f0f0f;
+  box-shadow:0 10px 30px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06) inset;
+}
+
+/* Vision image (landscape) */
+.vm-row:first-child .vm-art{
+  background:url("assets/web/vision.jpeg") center/cover no-repeat;
+}
+
+/* Mission image (portrait) */
+.vm-row--reverse .vm-art{
+  max-width:420px;
+  aspect-ratio:10/16;
+  margin-inline:auto;
+  background:url("assets/web/mission.jpeg") center/cover no-repeat;
+}
+
+.eyebrow{display:inline-block;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--vm-muted);margin-bottom:8px}
+.vm-title{font-size:clamp(1.6rem,3vw,2.4rem);line-height:1.15;margin:4px 0 14px;font-weight:800;letter-spacing:.01em;color:#fff}
+.vm-text{max-width:64ch;font-size:clamp(1rem,1.3vw,1.08rem);line-height:1.65;color:var(--vm-muted)}
+.vm-pill{
+  display:inline-block;margin:12px 8px 0 0;padding:6px 10px;font-size:.8rem;border-radius:999px;
+  background:linear-gradient(180deg,rgba(162,75,255,.18),rgba(123,60,255,.12));
+  border:1px solid rgba(162,75,255,.35);color:#eae3ff
+}
+
+/* =========================================================
+   SCROLLER (normal page behavior)
+========================================================= */
+.scroller{height:auto;overflow:visible;scroll-snap-type:none}
+.snap{scroll-snap-align:none;scroll-snap-stop:normal}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width:980px){
+  body.home .logo-holder{padding-top:6vh;padding-right:5vw}
+  body.home .home-logo{width:clamp(240px,44vw,560px)}
+  body.home .content.lowered{padding-top:6vh}
+  body.home .scrolldown{bottom:11vh}
+
+  .vm-row,.vm-row--reverse{grid-template-columns:1fr}
+  .vm-row--reverse .vm-copy,.vm-row--reverse .vm-media{order:0}
+}
+
+@media (max-width:640px){
+  .nav{padding:0 20px}
+  body.home .logo-holder{justify-content:center;padding-top:5vh;padding-right:0}
+  body.home .home-logo{width:clamp(180px,58vw,420px)}
+  body.home .headline .hword{font-size:clamp(34px,11vw,80px)}
+  body.home .ind-1{margin-left:3vw}
+  body.home .ind-2{margin-left:5vw}
+  body.home .content.lowered{padding-top:8vh}
+  body.home .scrolldown{bottom:9vh}
+}
+/* When .skip-intro is present, don't show the intro */
+.skip-intro #intro { display: none !important; }
+.skip-intro .home-logo { opacity: 1 !important; } /* if you fade in logo when intro ends */
+
+/* Intro overlay */
+#intro{
+  position:fixed; inset:0; z-index:9999;
+  display:grid; place-items:center;
+  background:#05000a;
+  opacity:1; pointer-events:none;
+}
+#intro .intro-logo{
+  width:min(220px, 28vw);
+  filter:drop-shadow(0 12px 40px rgba(125,0,255,.35));
+  animation:introPulse 1.6s ease-in-out 2 alternate;
+}
+@keyframes introPulse{
+  0%{ transform:scale(.92); opacity:.8 }
+  100%{ transform:scale(1); opacity:1 }
+}
+
+/* When skipping, hide intro entirely */
+.skip-intro #intro{ display:none !important; }
+/* Reduce gap under Mission */
+.vm-section {
+  padding-bottom: 0;
+}
+
+.vm-row:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+/* Parallax smoothness */
+.vm-art,
+.vm-copy,
+body.home .home-logo { will-change: transform; }
+
+/* Hide overflow so parallax elements don’t bleed outside */
+.vm-media { overflow: hidden; border-radius: 22px; }
+/* === Neon Glow Frame (static, no runner) === */
+.vm-art {
+  position: relative;
+  z-index: 1;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+/* Subtle inner + outer glow */
+.vm-art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    0 0 12px rgba(212,3,224,.45),
+    0 0 28px rgba(125,0,255,.35),
+    0 0 42px rgba(116,0,255,.25) inset;
+}
+/* === FRAME word: small, tight brackets === */
+.headline .hword.framed{
+  align-self:flex-start !important;   /* stop flex stretch */
+  display:inline-block !important;
+  width:auto !important;
+  white-space:nowrap;
+  line-height:1;
+  position:relative;
+  padding:.02em .10em;                /* tiny breathing room */
+
+  /* size controls */
+  --stroke:.045em;                    /* line thickness */
+  --corner:.58em;                     /* corner length */
+  --offset:.06em;                     /* distance from letters */
+  --color:#fff;                       /* corner color */
+}
+
+/* kill any previous bg-based corners */
+.headline .hword.framed::after{ background:none !important; }
+
+/* top-left corner */
+.headline .hword.framed::before{
+  content:"";
+  position:absolute;
+  width:var(--corner);
+  height:var(--corner);
+  top:calc(-1 * var(--offset));
+  left:calc(-1 * var(--offset));
+  border-top:var(--stroke) solid var(--color);
+  border-left:var(--stroke) solid var(--color);
+  pointer-events:none;
+  z-index:0;
+  filter: drop-shadow(0 0 .3em rgba(212,3,224,.45))
+          drop-shadow(0 0 .6em rgba(125,0,255,.35));
+}
+
+/* bottom-right corner */
+.headline .hword.framed::after{
+  content:"";
+  position:absolute;
+  width:var(--corner);
+  height:var(--corner);
+  bottom:calc(-1 * var(--offset));
+  right:calc(-1 * var(--offset));
+  border-right:var(--stroke) solid var(--color);
+  border-bottom:var(--stroke) solid var(--color);
+  pointer-events:none;
+  z-index:0;
+  filter: drop-shadow(0 0 .3em rgba(212,3,224,.45))
+          drop-shadow(0 0 .6em rgba(125,0,255,.35));
+}
+
+/* optional: even smaller on mobile */
+@media (max-width:640px){
+  .headline .hword.framed{
+    --stroke:.04em;
+    --corner:.48em;
+    --offset:-5em;
+    padding:.015em .08em;
+  }
+}
+/* Tighter brackets around FRAME */
+.headline .hword.framed{
+  /* smaller breathing room so corners hug the letters */
+  padding: .005em .06em;
+
+  /* move corners closer + slightly shorter */
+  --offset: .02em;   /* was ~.06em */
+  --corner: .22em;   /* was ~.58–.85em */
+  --stroke: .030em;   /* keep line readable, adjust if needed */
+}
+
+/* (optional) razor-tight variant — toggle by adding class 'tighter' if you want it even closer */
+.headline .hword.framed.tighter{
+  padding: 0 .04em;
+  --offset: .012em;
+  --corner: .50em;
+  --stroke: .048em;
+}

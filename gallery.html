@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NOCHARTE — Gallery</title>
+
+  <link href="https://fonts.cdnfonts.com/css/glacial-indifference" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="gallery.css" />
+</head>
+
+<body class="page-gallery">
+  <!-- Header -->
+  <header class="nav">
+    <a class="logo" href="index.html" aria-label="NOCHARTE Home">
+      <img src="assets/web/logohome.png" alt="NOCHARTE">
+    </a>
+    <nav class="links" role="navigation">
+      <a href="index.html" data-nav="home">Home</a>
+      <a href="gallery.html" data-nav="gallery" aria-current="page">Gallery</a>
+      <a href="about.html" data-nav="about">About</a>
+      <a href="contact.html" data-nav="contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Background -->
+  <div class="gal-bg"></div>
+  <div class="gal-vignette"></div>
+  <div class="gal-stars" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <!-- Arrows -->
+  <button class="float-arrow left" aria-label="Previous album">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4.5L8 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+  <button class="float-arrow right" aria-label="Next album">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5L16 12l-7.5 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+
+  <!-- Main -->
+  <main class="wrap">
+    <header class="hero-head">
+      <h1>Albums</h1>
+      <div class="filters">
+        <button class="pill is-active" disabled>All</button>
+      </div>
+    </header>
+
+    <section class="coverflow" aria-label="Album carousel">
+      <div class="stage" id="stage" role="listbox" aria-live="polite"></div>
+    </section>
+
+    <footer class="below">
+      <div class="info">
+        <h2 id="albumTitle">—</h2>
+        <p id="albumDate">—</p>
+      </div>
+      <a id="openAlbum" class="btn" href="#">Open Album</a>
+    </footer>
+  </main>
+
+  <script>
+  // Exactly two albums
+  const ALBUMS = [
+    {
+      slug: "luna-19-07-25",
+      title: "Luna — 19 Jul 2025",
+      date: "Jul 19, 2025",
+      count: "7",
+      cover: "assets/albums/luna-19-07-25/cover.png"
+    },
+    {
+      slug: "summer-23-08-25",
+      title: "Summer — 23 Aug 2025",
+      date: "Aug 23, 2025",
+      count: "52",
+      cover: "assets/albums/summer-23-08-25/cover.jpeg"
+    }
+  ];
+
+  const stage = document.getElementById('stage');
+  const albumTitle = document.getElementById('albumTitle');
+  const albumDate  = document.getElementById('albumDate');
+  const openAlbum  = document.getElementById('openAlbum');
+  const arrowL = document.querySelector('.float-arrow.left');
+  const arrowR = document.querySelector('.float-arrow.right');
+
+  // Stars
+  document.querySelectorAll('.gal-stars span').forEach(s=>{
+    s.style.left = Math.random()*100 + '%';
+    s.style.top  = Math.random()*100 + '%';
+    s.style.opacity = (Math.random()*0.7+0.2).toFixed(2);
+    s.style.width = s.style.height = (Math.random()*3+1) + 'px';
+  });
+
+  // Build cards as proper anchors
+  let index = 0;
+  function render(){
+    stage.innerHTML = ALBUMS.map(a => `
+      <a class="card"
+         role="option"
+         href="album.html?album=${encodeURIComponent(a.slug)}"
+         data-slug="${a.slug}"
+         data-title="${a.title}"
+         aria-label="Open ${a.title}">
+        <img src="${a.cover}" alt="${a.title} album cover" loading="lazy" />
+        <div class="meta"><h3>${a.title}</h3><p>${a.date} • ${a.count} photos</p></div>
+      </a>
+    `).join('');
+    addCardClickHandlers();
+    positionCards();
+  }
+
+  function positionCards(){
+    const cards = Array.from(stage.querySelectorAll('.card'));
+    if (!cards.length) return;
+
+    const cardW = cards[0]?.offsetWidth || 300;
+    const spacing = cardW * 0.78;         // tighter gap
+    const depthStep = 140;
+
+    cards.forEach((card, i) => {
+      const offset = i - index;
+      const abs = Math.abs(offset);
+      const tx = offset * spacing;
+      const tz = -abs * depthStep;
+      const ry = offset * -12;
+      const sc = i === index ? 1 : 0.94;
+      card.style.transform = `translate3d(${tx}px,0,${tz}px) rotateY(${ry}deg) scale(${sc})`;
+      card.style.zIndex = String(100 - abs);
+      card.classList.toggle('is-active', i === index);
+    });
+
+    const active = ALBUMS[index];
+    albumTitle.textContent = active.title;
+    albumDate.textContent  = `${active.date} • ${active.count} photos`;
+    openAlbum.href = `album.html?album=${encodeURIComponent(active.slug)}`;
+
+    arrowL.classList.toggle('is-disabled', index === 0);
+    arrowR.classList.toggle('is-disabled', index === ALBUMS.length - 1);
+  }
+
+  function prev(){ if(index>0){ index--; positionCards(); } }
+  function next(){ if(index<ALBUMS.length-1){ index++; positionCards(); } }
+
+  // --- Drag-to-swipe without stealing clicks
+  let downX = null, isDragging = false;
+
+  stage.addEventListener('pointerdown', e => {
+    downX = e.clientX;
+    isDragging = false;
+  });
+
+  stage.addEventListener('pointermove', e => {
+    if (downX == null) return;
+    const dx = e.clientX - downX;
+    if (!isDragging && Math.abs(dx) > 12) isDragging = true;       // start drag after small threshold
+    if (isDragging && Math.abs(dx) > 40) {                          // navigate once per chunk
+      (dx > 0 ? prev() : next());
+      downX = e.clientX;
+    }
+  });
+
+  stage.addEventListener('pointerup',   () => { downX = null; isDragging = false; });
+  stage.addEventListener('pointerleave',() => { downX = null; isDragging = false; });
+
+  // Force navigation on card click (and keep skip-intro)
+  function addCardClickHandlers(){
+    stage.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', (ev) => {
+        if (isDragging) { ev.preventDefault(); return; } // it was a swipe
+        ev.preventDefault();
+        const url = new URL(card.href, location.href);
+        url.searchParams.set('skip-intro', '1');
+        location.assign(url.href);
+      });
+    });
+  }
+
+  // Arrow keys
+  arrowL.addEventListener('click', prev);
+  arrowR.addEventListener('click', next);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === 'ArrowRight') next();
+  });
+
+  // Mark current nav + global skip-intro
+  (function(){
+    try{
+      const path = (location.pathname.replace(/\/+$/, '') || '/gallery.html').toLowerCase();
+      document.querySelectorAll('.links a').forEach(a => {
+        const url = new URL(a.getAttribute('href'), location.origin);
+        const p = url.pathname.replace(/\/+$/, '').toLowerCase();
+        if (p === path) a.setAttribute('aria-current', 'page');
+      });
+    }catch(e){}
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (a.target === '_blank') return;
+      const href = a.getAttribute('href') || '';
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
+      const url = new URL(href, location.href);
+      if (url.origin !== location.origin) return;
+      e.preventDefault();
+      url.searchParams.set('skip-intro', '1');
+      location.assign(url.href);
+    }, { capture: true });
+  })();
+
+  // Init
+  window.addEventListener('load', render);
+  window.addEventListener('resize', positionCards);
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NOCHARTE — Contact</title>
+  <meta name="description" content="Contact NOCHARTE to book nightlife photography. Fast, precise, and on brand." />
+  <link href="https://fonts.cdnfonts.com/css/glacial-indifference" rel="stylesheet" />
+  <!-- Global (shared header, base) -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- Page-scoped styles -->
+  <link rel="stylesheet" href="contact.css" />
+</head>
+
+<body class="page-contact">
+  <!-- SHARED HEADER (same on every page) -->
+  <header class="nav">
+    <a class="logo" href="index.html" aria-label="NOCHARTE Home">
+      <img src="assets/web/logohome.png" alt="NOCHARTE">
+    </a>
+    <nav class="links" role="navigation">
+      <a href="index.html" data-nav="home">Home</a>
+      <a href="gallery.html" data-nav="gallery">Gallery</a>
+      <a href="about.html" data-nav="about">About</a>
+      <a href="contact.html" data-nav="contact" aria-current="page">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <!-- HERO -->
+    <section class="contact-hero v2" aria-label="Contact hero">
+      <div class="hero-bg">
+        <div class="bg-gradient"></div>
+        <div class="bg-light"></div>
+      </div>
+
+      <div class="hero-content">
+        <h1 class="hero-title" title="Contact"><span>CONTACT</span></h1>
+        <p class="hero-tag" id="heroTag"
+           data-phrases='[
+             "Tell us the date, the vibe, and the must-haves.",
+             "We’ll frame the night and keep it stress-free.",
+             "Fast delivery. On-brand color. No drama."
+           ]'>
+          Tell us the date, the vibe, and the must-haves. We’ll handle the rest.
+        </p>
+        <p class="breadcrumbs"><a href="index.html">Home</a> › Contact</p>
+      </div>
+    </section>
+
+    <!-- QUICK CONTACT -->
+    <section class="cards" aria-label="Quick contact options">
+      <a class="card" href="mailto:nocharte@gmail.com">
+        <div class="card-title">Email</div>
+        <div class="card-sub">nocharte@gmail.com</div>
+        <div class="card-foot">Open email →</div>
+      </a>
+      <a class="card" href="https://instagram.com/nocharte_photography" target="_blank" rel="noopener">
+        <div class="card-title">Instagram</div>
+        <div class="card-sub">@nocharte_photography</div>
+        <div class="card-foot">DM us →</div>
+      </a>
+    </section>
+
+    <!-- FORM -->
+    <section class="contact-form" aria-label="Booking form">
+      <h2 class="form-title">Book NOCHARTE</h2>
+
+      <form id="bookingForm" class="form" method="post" action="" enctype="multipart/form-data" novalidate>
+        <!-- spam trap -->
+        <input type="text" name="website" class="hp" autocomplete="off" tabindex="-1" aria-hidden="true"/>
+
+        <div class="grid">
+          <label class="field">
+            <span>Name*</span>
+            <input type="text" name="name" required placeholder="Your name" autocomplete="name"/>
+          </label>
+
+          <label class="field">
+            <span>Email*</span>
+            <input type="email" name="email" required placeholder="you@email.com" autocomplete="email"/>
+          </label>
+
+          <label class="field">
+            <span>Event Date</span>
+            <input type="date" name="date" inputmode="none"/>
+          </label>
+
+          <label class="field">
+            <span>Budget (approx.)</span>
+            <select name="budget">
+              <option value="">Select</option>
+              <option>Under €300</option>
+              <option>€300–€600</option>
+              <option>€600–€1,000</option>
+              <option>€1,000+</option>
+            </select>
+          </label>
+
+          <label class="field span-2">
+            <span>Venue / City</span>
+            <input type="text" name="venue" placeholder="Club or location" autocomplete="organization"/>
+          </label>
+
+          <label class="field span-2">
+            <span>Message*</span>
+            <textarea name="message" rows="6" required placeholder="Tell us the vibe, timings, and must-capture moments..."></textarea>
+          </label>
+
+          <label class="field file-field">
+            <span>Attachment (moodboard, brief)</span>
+            <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png"/>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" name="consent" required />
+            <span>I agree to be contacted about this request.</span>
+          </label>
+        </div>
+
+        <button class="btn" type="submit">Send Request</button>
+        <p class="mailto-fallback">Prefer email? <a href="mailto:nocharte@gmail.com?subject=Booking%20Inquiry%20-%20NOCHARTE">nocharte@gmail.com</a></p>
+        <p id="formStatus" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <!-- Floating vertical “CONTACT” outline -->
+  <div class="contact-floating-accent" aria-hidden="true">
+    <svg viewBox="0 0 800 160" class="accent-svg" role="img" aria-label="Contact">
+      <defs>
+        <linearGradient id="strokeWave" x1="0" y1="-300" x2="0" y2="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stop-color="#b47bff"/>
+          <stop offset="50%" stop-color="#5193ff"/>
+          <stop offset="100%" stop-color="#b47bff"/>
+          <animateTransform attributeName="gradientTransform" type="translate" values="0,-300; 0,300; 0,-300" dur="7s" repeatCount="indefinite"/>
+        </linearGradient>
+        <mask id="textStrokeMask">
+          <rect width="100%" height="100%" fill="black"/>
+          <text x="0" y="115"
+                font-family="inherit" font-weight="900"
+                font-size="110" letter-spacing=".14em"
+                fill="transparent" stroke="white" stroke-width="5"
+                stroke-linejoin="round" paint-order="stroke">CONTACT</text>
+        </mask>
+      </defs>
+
+      <text x="0" y="115"
+            font-family="inherit" font-weight="900"
+            font-size="110" letter-spacing=".14em"
+            fill="transparent" stroke="rgba(255,255,255,.16)"
+            stroke-width="5" stroke-linejoin="round" paint-order="stroke">CONTACT</text>
+
+      <rect x="-200" y="-400" width="1400" height="900"
+            fill="url(#strokeWave)" mask="url(#textStrokeMask)"/>
+    </svg>
+  </div>
+
+  <!-- FORM JS -->
+  <script>
+    (function(){
+      const form = document.getElementById('bookingForm');
+      const status = document.getElementById('formStatus');
+      if(!form) return;
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        status.textContent = '';
+
+        // honeypot
+        if (form.website.value) return;
+
+        // required fields
+        const required = ['name','email','message','consent'];
+        for (const key of required) {
+          const el = form.querySelector(`[name="${key}"]`);
+          if (key === 'consent') {
+            if (!el.checked) { el.focus(); status.textContent = 'Please agree to be contacted.'; return; }
+          } else {
+            if (!el.value.trim()) { el.focus(); status.textContent = 'Please fill the required fields.'; return; }
+          }
+        }
+
+        // email format
+        const email = form.email.value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { form.email.focus(); status.textContent = 'Enter a valid email.'; return; }
+
+        // fake success
+        form.reset();
+        status.textContent = 'Thanks! Your message has been queued. We’ll reply shortly.';
+      });
+    })();
+  </script>
+
+  <!-- Rotating tagline -->
+  <script>
+    (function(){
+      const el = document.getElementById('heroTag');
+      if(!el) return;
+
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const phrases = (()=>{ try { return JSON.parse(el.dataset.phrases || '[]'); } catch(_){ return []; } })();
+      if(!phrases.length || reduce) return;
+
+      let i = 0;
+      const show = (text)=>{
+        el.style.opacity = 0; el.style.transform = 'translateY(6px)';
+        setTimeout(()=>{
+          el.textContent = text;
+          el.style.opacity = 1; el.style.transform = 'translateY(0)';
+        }, 220);
+      };
+      setInterval(()=>{
+        i = (i + 1) % phrases.length;
+        show(phrases[i]);
+      }, 3600);
+    })();
+  </script>
+
+  <!-- Optional: auto-mark current nav (safe if you reuse header everywhere) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const path = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      document.querySelectorAll('.links a').forEach(a => {
+        const href = (a.getAttribute('href') || '').split('/').pop().toLowerCase();
+        if (href === path) a.setAttribute('aria-current','page');
+      });
+    });
+  </script>
+<script>
+(function () {
+  document.addEventListener('click', function (e) {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+
+    // ignore modified clicks / new-tab / non-HTTP links
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.target === '_blank') return;
+
+    const href = a.getAttribute('href') || '';
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
+
+    const url = new URL(href, location.href);
+    if (url.origin !== location.origin) return; // external
+
+    // Internal nav → add one-time flag and navigate
+    e.preventDefault();
+    url.searchParams.set('skip-intro', '1');
+    location.assign(url.href);
+  }, { capture: true });
+})();
+</script>
+</body>
+</html>

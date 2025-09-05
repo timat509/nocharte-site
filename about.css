@@ -1,0 +1,289 @@
+/* ===========================
+   ABOUT (fresh, no images)
+   =========================== */
+
+.page-about{
+  /* design tokens scoped to this page */
+  --wrap: min(1400px, 94vw);
+  --ink: #f5f5f7;
+  --muted:#b9b9c2;
+  --mag:#d400ff;      /* magenta */
+  --vio:#7400ff;      /* purple */
+
+  color: var(--ink);
+}
+
+/* clear header overlap */
+.page-about .hero{
+  padding-top: calc(var(--nav-h, 72px) + clamp(24px, 6vh, 96px));
+}
+
+/* wrapper */
+.page-about .wrap{ width:var(--wrap); margin:0 auto; }
+
+/* ============ HERO ============ */
+.page-about .hero{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(12, minmax(0,1fr));
+  gap:clamp(16px, 1.6vw, 24px);
+  padding-left: clamp(16px, 2.6vw, 56px);
+  padding-right: clamp(16px, 2.6vw, 56px);
+  padding-bottom: clamp(28px, 8vh, 64px);
+}
+
+.page-about .title{ font-family:"Anton", system-ui, sans-serif; line-height:.92 }
+.page-about .title-row-1{ grid-column:1 / span 8; display:flex; gap:clamp(24px, 4vw, 48px) }
+.page-about .title-row-2{ grid-column:1 / span 7; display:flex; gap:clamp(16px, 2vw, 32px); margin-top:clamp(6px, 1vh, 10px) }
+
+.page-about .who,
+.page-about .we,
+.page-about .are,
+.page-about .qmark{
+  font-size: clamp(84px, 18vw, 230px);
+  text-transform: uppercase;
+}
+
+/* brand gradient on “WHO”, keep others solid white */
+.page-about .who{
+  background:linear-gradient(180deg, var(--mag), var(--vio));
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:transparent;
+  filter:drop-shadow(0 18px 40px rgba(116,0,255,.30));
+}
+.page-about .we,
+.page-about .are,
+.page-about .qmark{ color:#fff }
+
+/* tagline */
+.page-about .tagline{
+  grid-column:1 / span 8;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  color:#e8e8ef;
+  opacity:.95;
+  margin-top: clamp(8px, 1.4vh, 16px);
+}
+
+/* CTAs */
+.page-about .cta-col{
+  grid-column:9 / 13;
+  display:grid; gap:16px; align-content:start;
+  padding-top: clamp(12px, 2vh, 24px);
+}
+.page-about .cta{
+  display:inline-flex; align-items:center; gap:12px;
+  font-weight:800; letter-spacing:.02em;
+}
+.page-about .cta .dot{
+  display:inline-grid; place-items:center;
+  width:54px; height:54px; border-radius:50%;
+  background:radial-gradient(100% 100% at 30% 20%, var(--vio), var(--mag));
+  box-shadow:0 10px 28px rgba(116,0,255,.35);
+}
+
+/* anchor jump offset so sticky header doesn’t cover */
+.page-about #story,
+.page-about #work{ scroll-margin-top: calc(var(--nav-h, 72px) + 24px); }
+
+/* ============ SECTIONS ============ */
+.page-about .section{ padding: clamp(40px, 9vh, 96px) 0 }
+.page-about .story{ }
+.page-about .work{ }
+
+.page-about .story-grid{
+  display:grid; grid-template-columns:1.1fr 1fr;
+  gap:clamp(20px, 4vw, 48px); align-items:center;
+}
+
+.page-about .sec-title{
+  font-family:"Anton", system-ui, sans-serif;
+  font-size:clamp(36px, 6vw, 64px); color:#fff;
+}
+.page-about .sec-title.right{ text-align:right }
+
+.page-about .story-copy p{
+  color:#eaeaf0;
+  font-size:clamp(16px, 1.8vw, 20px);
+  line-height:1.6;
+}
+
+.page-about .work-grid{ display:grid; gap:18px }
+.page-about .work-cols{
+  display:grid; grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:clamp(16px, 2vw, 24px);
+}
+.page-about .work-item{
+  background:#0f0f13;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:12px; padding:18px 16px;
+}
+.page-about .work-item h3{ margin:0 0 6px; color:#fff }
+.page-about .work-item p{ color:var(--muted) }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 1100px){
+  .page-about .hero{ grid-template-columns:repeat(8, minmax(0,1fr)) }
+  .page-about .title-row-1{ grid-column:1 / -1 }
+  .page-about .title-row-2{ grid-column:1 / -1 }
+  .page-about .tagline{ grid-column:1 / -1 }
+  .page-about .cta-col{ grid-column:1 / -1; grid-auto-flow:row; grid-template-columns:none }
+  .page-about .story-grid{ grid-template-columns:1fr }
+}
+
+@media (max-width: 720px){
+  .page-about .work-cols{ grid-template-columns:1fr }
+}
+/* === ABOUT — Camera size & placement (clean, single source of truth) === */
+.page-about{
+  /* Tweak these three to taste */
+  --cam-w: clamp(680px, 38vw, 900px);  /* overall size (desktop look) */
+  --cam-x: -2rem;                      /* left/right nudge (negative = into “E”) */
+  --cam-y: -0.3rem;                    /* slight vertical lift */
+}
+
+.page-about .media{
+  grid-column: 8 / 13;
+  grid-row: 1 / 3;
+  position: relative;
+  overflow: visible;
+  z-index: 4;
+}
+
+.page-about .media .cams{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--cam-w);
+  height: auto;
+  max-width: none;                     /* ignore global img max-width */
+  transform: translate(var(--cam-x), var(--cam-y));
+  transform-origin: right top;
+  pointer-events: none;
+  image-rendering: auto;               /* keep it crisp */
+}
+
+/* Large-ish laptops */
+@media (max-width: 1400px){
+  .page-about{
+    --cam-w: clamp(640px, 42vw, 840px);
+    --cam-x: -1.2rem;
+  }
+}
+
+/* Tablets / small laptops */
+@media (max-width: 1100px){
+  .page-about{
+    --cam-w: clamp(560px, 48vw, 760px);
+    --cam-x: -0.5rem;
+  }
+}
+
+/* Mobile – keep it neat, no overlap */
+@media (max-width: 900px){
+  .page-about{
+    --cam-w: min(520px, 78vw);
+    --cam-x: 0rem;
+    --cam-y: 0rem;
+  }
+}
+/* === ABOUT — lift the whole hero closer to the header === */
+.page-about .hero{
+  /* reduce just the TOP padding of the hero (was ~8vh) */
+  padding-top: clamp(6px, 2.6vh, 28px);
+}
+
+/* keep cameras aligned relative to the new top edge */
+.page-about{
+  /* tiny extra lift so the cameras follow the text up cleanly */
+  --cam-y: -0.6rem;  /* tweak: -0.8rem for a hair higher, -0.3rem for lower */
+}
+
+/* optional: on small screens give it a touch more breathing room */
+@media (max-width: 900px){
+  .page-about .hero{ padding-top: clamp(10px, 3.4vh, 32px); }
+  .page-about{ --cam-y: -0.3rem; }
+}
+/* Move the cameras slightly to the RIGHT */
+.page-about{
+  --cam-x: 3rem;   /* + = right,  - = left. Try 0.5rem, 1rem, 1.5rem... */
+}
+/* alternative: shift the column left */
+.page-about .cta-col{ grid-column: 7 / 12; }  /* was 8 / 13 */
+
+/* ========= ABOUT — RESPONSIVE OVERRIDES ========= */
+/* Desktop is your current baseline */
+
+/* ---------- down to 1280 ---------- */
+@media (max-width: 1280px){
+  .page-about{
+    /* keep overlap but shrink a touch */
+    --media-width: clamp(980px, 66vw, 1240px);
+    --cams-shift-x: 1.0rem;    /* + = nudge right, − = left */
+    --group-raise: -12px;      /* keep it close to header */
+    --cta-x: -3.2rem;          /* keep CTAs left */
+    --cta-raise: -90px;
+  }
+  .page-about .media{ grid-column: 8 / -1; }
+}
+
+/* ---------- tablets ~1024 ---------- */
+@media (max-width: 1024px){
+  .page-about{
+    --media-width: clamp(860px, 74vw, 1080px);
+    --cams-shift-x: 0.6rem;    /* still a little overlap on the E */
+    --group-raise: -6px;
+    --cta-x: -2.6rem;
+    --cta-raise: -80px;
+  }
+  .page-about .hero{
+    grid-template-columns: repeat(12, minmax(0,1fr));
+    padding: clamp(20px, 6vh, 56px) 5vw clamp(24px, 6vh, 56px);
+    row-gap: 12px;
+  }
+  .page-about .title-row-1{ grid-column: 1 / span 7; }
+  .page-about .title-row-2{ grid-column: 1 / span 6; }
+  .page-about .media{ grid-column: 7 / -1; }
+}
+
+/* ---------- small tablets ~768 ---------- */
+@media (max-width: 768px){
+  .page-about{
+    /* cameras move under the headline, sized to fit */
+    --media-width: min(82vw, 640px);
+    --cams-shift-x: 0rem;
+    --group-raise: 0;      /* give the header a little breathing room */
+    --cta-x: 0;
+    --cta-raise: 0;
+  }
+  .page-about .hero{
+    grid-template-columns: repeat(6, minmax(0,1fr));
+    padding: clamp(18px, 6vh, 40px) 5vw clamp(20px, 6vh, 44px);
+    row-gap: 12px;
+  }
+  .page-about .title-row-1,
+  .page-about .title-row-2{ grid-column: 1 / -1; }
+
+  .page-about .media{
+    grid-column: 2 / -1;         /* a little inset from the left edge */
+    margin-top: 8px;
+  }
+  .page-about .cta-col{
+    grid-column: 1 / -1;
+    justify-items: flex-start;
+    margin-top: 8px;
+  }
+}
+
+/* ---------- phones ~390 (and below) ---------- */
+@media (max-width: 430px){
+  .page-about{
+    --media-width: 92vw;   /* nearly full-bleed but safe */
+    --cams-shift-x: 0;
+  }
+  .page-about .hero{ padding: 16px 16px 26px; }
+  .page-about .cta-col{ gap: 10px; }
+  .page-about .dot{ width: 48px; height: 48px; }  /* slightly smaller buttons */
+}
+

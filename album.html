@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NOCHARTE — Album</title>
+
+  <link href="https://fonts.cdnfonts.com/css/glacial-indifference" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Minimal page-scoped styles for the album grid */
+    body.page-album { background:#000; color:#f5f5f7; }
+    .wrap { width:min(1200px,92%); margin:0 auto; padding:clamp(28px,5vw,44px) 0; }
+
+    .album-head{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+      margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:12px;
+    }
+    .album-title{ font-size:clamp(22px,4vw,34px); font-weight:800; letter-spacing:.02em; color:#fff }
+    .album-meta{ opacity:.8 }
+
+    .grid{
+      display:grid; gap:14px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+    .grid figure{ margin:0; position:relative; overflow:hidden; border-radius:12px;
+      background:#0d0d0f; border:1px solid rgba(255,255,255,.06); }
+    .grid img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .empty { padding:40px 0; opacity:.8 }
+    .back { display:inline-block; margin-right:auto; padding:10px 14px; border:1px solid rgba(255,255,255,.2);
+      border-radius:999px; text-decoration:none; font-weight:700; }
+    .back:hover{ background:#fff; color:#000 }
+
+    @media (max-width:640px){
+      .album-head{ flex-direction:column; align-items:flex-start }
+    }
+  </style>
+</head>
+<body class="page-album">
+  <!-- Shared header -->
+  <header class="nav">
+    <a class="logo" href="index.html" aria-label="NOCHARTE Home">
+      <img src="assets/web/logohome.png" alt="NOCHARTE">
+    </a>
+    <nav class="links" role="navigation">
+      <a href="index.html" data-nav="home">Home</a>
+      <a href="gallery.html" data-nav="gallery">Gallery</a>
+      <a href="about.html" data-nav="about">About</a>
+      <a href="contact.html" data-nav="contact">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="album-head">
+      <a class="back" href="gallery.html">← Back to Gallery</a>
+      <div>
+        <h1 id="albumTitle" class="album-title">Loading…</h1>
+        <p id="albumMeta" class="album-meta"></p>
+      </div>
+    </div>
+
+    <section id="albumGrid" class="grid" aria-live="polite"></section>
+    <p id="emptyMsg" class="empty" style="display:none">No photos found for this album.</p>
+  </main>
+
+  <script>
+    // 1) Get slug from ?album=
+    const params = new URLSearchParams(location.search);
+    const slug = (params.get('album') || '').trim();
+    const titleEl = document.getElementById('albumTitle');
+    const metaEl  = document.getElementById('albumMeta');
+    const gridEl  = document.getElementById('albumGrid');
+    const emptyEl = document.getElementById('emptyMsg');
+
+    if (!slug){
+      titleEl.textContent = 'Album not specified';
+      emptyEl.style.display = 'block';
+    } else {
+      // 2) Load that album’s photos.js
+      const s = document.createElement('script');
+      s.src = `assets/albums/${slug}/photos.js`;
+      s.onerror = () => {
+        titleEl.textContent = 'Album not found';
+        emptyEl.style.display = 'block';
+      };
+      s.onload = renderAlbum;
+      document.head.appendChild(s);
+    }
+
+    function renderAlbum(){
+      const DB = window.NOCH_PHOTOS || {};
+      const photos = DB[slug] || [];
+      if (!photos.length){
+        titleEl.textContent = prettyFromSlug(slug);
+        emptyEl.style.display = 'block';
+        return;
+      }
+
+      // Optional: infer a nice title + meta from first entry or slug
+      titleEl.textContent = prettyFromSlug(slug);
+      metaEl.textContent  = `${photos.length} photos`;
+
+      gridEl.innerHTML = photos.map(p => `
+        <figure>
+          <img loading="lazy" src="${p.src}" alt="${escapeHtml(p.alt || '')}">
+        </figure>
+      `).join('');
+    }
+
+    function prettyFromSlug(s){
+      // "luna-19-07-25" -> "Luna — 19 07 25"
+      return s.replace(/-/g, ' ').replace(/\b\w/g, m => m.toUpperCase()).replace(/\s(\d)/, ' — $1');
+    }
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+  </script>
+</body>
+</html>
