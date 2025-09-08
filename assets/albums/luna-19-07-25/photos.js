@@ -1,4 +1,3 @@
-// exact, case-sensitive filenames
 window.PHOTOS = [
   "luna1.png",
   "luna2.JPG",
