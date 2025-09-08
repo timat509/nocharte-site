@@ -175,50 +175,45 @@
         });
       }catch(e){}
     })();
-
-    // -------- Recent Albums (REAL DATA) --------
-    (function(){
-      const albums = [
-        {
-          title: "Summer La Gloria — 23 Aug 2025",
-          dateISO: "2025-08-23",
-          photos: 52,
-          cover: "assets/albums/la-gloria-25-08-23/cover.jpeg",
-          url:   "album-la-gloria-2025-08-23.html"
-        },
-        {
-          title: "Luna — 19 Jul 2025",
-          dateISO: "2025-07-19",
-          photos: 7,
-          cover: "assets/albums/luna-2025-07-19/cover.png",
-          url:   "album-luna-2025-07-19.html"
-        }
-      ];
-
-      const grid = document.getElementById('recent-albums');
-      if (!grid) return;
-
-      // clear old
-      grid.innerHTML = "";
-
-      const recent = albums
-        .sort((a,b)=> new Date(b.dateISO) - new Date(a.dateISO))
-        .slice(0,3);
-
-      if (recent.length === 2) grid.classList.add('two'); else grid.classList.remove('two');
-
-      grid.innerHTML = recent.map(a => `
-        <a class="card" href="${a.url}" aria-label="Open ${a.title}">
-          <div class="art">
-            <img src="${a.cover}" alt="${a.title}" loading="lazy">
-          </div>
-          <div class="meta">
-            <strong>${a.title.split(' — ')[0]}</strong>
-            <span>${new Date(a.dateISO).toLocaleString('en-US',{month:'short', year:'numeric'})} • ${a.photos} photos</span>
-          </div>
-        </a>
-      `).join('');
-    })();
   </script>
+
+  <!-- Recent Albums (REAL DATA) -->
+<script>
+(function(){
+  const albums = [
+    {
+      title: "Summer La Gloria — 23 Aug 2025",
+      dateISO: "2025-08-23",
+      photos: 52,
+      cover: "/assets/albums/summer-23-08-25/cover.jpeg",   // absolute path; matches your folders
+      url:   "/album.html?slug=summer-23-08-25"              // one album page with slug
+    },
+    {
+      title: "Luna — 19 Jul 2025",
+      dateISO: "2025-07-19",
+      photos: 7,
+      cover: "/assets/albums/luna-19-07-25/cover.png",
+      url:   "/album.html?slug=luna-19-07-25"
+    }
+  ];
+
+  const grid = document.getElementById('recent-albums');
+  if (!grid) return;
+
+  grid.innerHTML = "";
+  const recent = albums.sort((a,b)=> new Date(b.dateISO)-new Date(a.dateISO)).slice(0,3);
+  if (recent.length === 2) grid.classList.add('two');
+
+  grid.innerHTML = recent.map(a => `
+    <a class="card" href="${a.url}" aria-label="Open ${a.title}">
+      <div class="art"><img src="${a.cover}" alt="${a.title}" loading="lazy"></div>
+      <div class="meta">
+        <strong>${a.title.split(' — ')[0]}</strong>
+        <span>${new Date(a.dateISO).toLocaleString('en-US',{month:'short',year:'numeric'})} • ${a.photos} photos</span>
+      </div>
+    </a>
+  `).join('');
+})();
+</script>
 </body>
 </html>
