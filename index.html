@@ -115,7 +115,7 @@
         <span>NOCHARTE</span>
       </div>
 
-      <div class="featured__inner">
+      <div class="featured__inner" id="featured-recent">
         <div class="featured__head">
           <h2>Most Recent Events</h2>
           <p>Recent nights captured by NOCHARTE</p>
@@ -133,70 +133,14 @@
 
   <!-- JS -->
   <script>
-    // ----- OPTIONAL: GSAP parallax/scroll if GSAP exists -----
-    if (window.gsap && window.ScrollTrigger) {
-      gsap.registerPlugin(ScrollTrigger);
-
-      gsap.to(".home .home-logo", {
-        yPercent: -10, ease: "none",
-        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
-      });
-
-      gsap.to(".hero-particles span", {
-        yPercent: -20, ease: "none",
-        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
-      });
-
-      gsap.utils.toArray(".vm-media .vm-art").forEach((el, i) => {
-        gsap.fromTo(el, { y: i % 2 ? 60 : -60 }, {
-          y: i % 2 ? -60 : 60, ease: "none",
-          scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true }
-        });
-      });
-
-      gsap.utils.toArray(".vm-copy").forEach((el) => {
-        gsap.from(el, {
-          y: 40, autoAlpha: 0, duration: 0.8, ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 80%", toggleActions: "play none none reverse" }
-        });
-      });
-
-      gsap.utils.toArray(".featured .art").forEach((el) => {
-        gsap.fromTo(el, { y: 30, scale: 1.02 }, {
-          y: -30, scale: 1, ease: "none",
-          scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true }
-        });
-      });
-
-      // Brand lock triggers
-      gsap.registerPlugin(ScrollTrigger);
-      ScrollTrigger.create({
-        trigger: "#featured",
-        start: "top center",
-        onEnter: () =>
-          gsap.to("#headline", {
-            scale: 0.38, x: -40, y: -60, transformOrigin: "left top",
-            duration: 0.8, ease: "power3.out",
-          }),
-        onLeaveBack: () =>
-          gsap.to("#headline", { scale: 1, x: 0, y: 0, duration: 0.8, ease: "power3.out" }),
-      });
-      ScrollTrigger.create({
-        trigger: "#featured",
-        start: "top center",
-        onEnter: () => gsap.to(".brand-lock", { autoAlpha: 1, y: 0, duration: 0.6 }),
-        onLeaveBack: () => gsap.to(".brand-lock", { autoAlpha: 0, y: -20, duration: 0.4 }),
-      });
-    }
-
-    // Reveal headline words (works with or without GSAP)
+    // Reveal headline words
     function runHeroReveal() {
       const words = document.querySelectorAll(".headline .hword");
       if (window.gsap) gsap.from(words, { y: 40, autoAlpha: 0, stagger: 0.12, duration: 0.9, ease: "power3.out" });
     }
     window.addEventListener("load", runHeroReveal);
 
-    // Simple parallax (mouse/scroll) without external libs
+    // Simple parallax (mouse/scroll)
     (function parallax() {
       const scene = document.getElementById("scene");
       if (!scene) return;
@@ -218,36 +162,6 @@
       );
     })();
 
-    // Morph from intro
-    (function(){
-      try{
-        const raw = sessionStorage.getItem('nocharte_morph');
-        if(!raw) return;
-        sessionStorage.removeItem('nocharte_morph');
-
-        const m = JSON.parse(raw);
-        const logo = document.getElementById('homeLogo');
-        if(!logo) return;
-
-        logo.style.opacity = '0';
-        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const dst = logo.getBoundingClientRect();
-        const dstCx = dst.left + dst.width/2;
-        const dstCy = dst.top  + dst.height/2;
-
-        const dx = m.cx - dstCx;
-        const dy = m.cy - dstCy;
-        const scale = m.w / dst.width;
-
-        if (window.gsap && !reduce){
-          gsap.set(logo, { autoAlpha:1, transformOrigin:'50% 50%', x:dx, y:dy, scale:scale, zIndex:10 });
-          gsap.to(logo, { x:0, y:0, scale:1, duration:.9, ease:'power3.inOut' });
-        } else {
-          logo.style.opacity = '1';
-        }
-      }catch(_){}
-    })();
-
     // Mark current nav link
     (function(){
       try{
@@ -264,10 +178,9 @@
 
     // -------- Recent Albums (REAL DATA) --------
     (function(){
-      // If you already have window.ALBUMS from another file, it will use that.
-      const albums = (window.ALBUMS || [
+      const albums = [
         {
-          title: "La Gloria — 23 Aug 2025",
+          title: "La Gloria — 23 Aug 2024",
           dateISO: "2025-08-23",
           photos: 52,
           cover: "albums/la-gloria-2025-08-23/cover.jpg",
@@ -279,28 +192,25 @@
           photos: 7,
           cover: "albums/luna-2025-07-19/cover.jpg",
           url:   "album-luna-2025-07-19.html"
-        },
-        {
-          title: "Neon Pulse — 14 Jun 2025",
-          dateISO: "2025-06-14",
-          photos: 96,
-          cover: "albums/neon-pulse-2025-06-14/cover.jpg",
-          url:   "album-neon-pulse-2025-06-14.html"
         }
-        // Add more as you publish; newest 3 will show automatically
-      ]);
-
-      const recent = [...albums]
-        .sort((a,b)=> new Date(b.dateISO) - new Date(a.dateISO))
-        .slice(0,3);
+      ];
 
       const grid = document.getElementById('recent-albums');
       if (!grid) return;
 
+      // clear old
+      grid.innerHTML = "";
+
+      const recent = albums
+        .sort((a,b)=> new Date(b.dateISO) - new Date(a.dateISO))
+        .slice(0,3);
+
+      if (recent.length === 2) grid.classList.add('two'); else grid.classList.remove('two');
+
       grid.innerHTML = recent.map(a => `
         <a class="card" href="${a.url}" aria-label="Open ${a.title}">
           <div class="art">
-            <img src="${a.cover}" alt="${a.title}" loading="lazy" />
+            <img src="${a.cover}" alt="${a.title}" loading="lazy">
           </div>
           <div class="meta">
             <strong>${a.title.split(' — ')[0]}</strong>
