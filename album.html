@@ -5,52 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NOCHARTE — Album</title>
 
-  <!-- Fonts + site styles -->
   <link href="https://fonts.cdnfonts.com/css/glacial-indifference" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 
-  <!-- Page-scoped styles (simple, safe) -->
   <style>
     body.page-album { background:#000; color:#f5f5f7; }
     .wrap { width:min(1200px,92%); margin:0 auto; padding:clamp(28px,5vw,44px) 0; }
-
-    .album-head{
-      display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
-      margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:12px;
-    }
+    .album-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+      margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:12px; }
     .album-title{ font-size:clamp(22px,4vw,34px); font-weight:800; letter-spacing:.02em; color:#fff }
     .album-meta{ opacity:.8 }
-
-    .grid{
-      display:grid; gap:14px;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    }
-    .grid figure{ margin:0; position:relative; overflow:hidden; border-radius:12px;
-      background:#0d0d0f; border:1px solid rgba(255,255,255,.06); }
+    .grid{ display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
+    .grid figure{ margin:0; overflow:hidden; border-radius:12px; background:#0d0d0f; border:1px solid rgba(255,255,255,.06); }
     .grid img{ width:100%; height:280px; object-fit:cover; display:block; background:#0b0b0b; }
-
     .empty { padding:40px 0; opacity:.8 }
     .back { display:inline-block; margin-right:auto; padding:10px 14px; border:1px solid rgba(255,255,255,.2);
       border-radius:999px; text-decoration:none; font-weight:700; color:#f5f5f7 }
     .back:hover{ background:#fff; color:#000 }
-
-    @media (max-width:640px){
-      .album-head{ flex-direction:column; align-items:flex-start }
-      .grid img{ height:220px; }
-    }
+    @media (max-width:640px){ .album-head{ flex-direction:column; align-items:flex-start } .grid img{ height:220px; } }
   </style>
 </head>
 <body class="page-album">
-  <!-- Header -->
   <header class="nav">
     <a class="logo" href="/index.html" aria-label="NOCHARTE Home">
       <img src="/assets/web/logohome.png" alt="NOCHARTE">
     </a>
     <nav class="links" role="navigation">
-      <a href="/index.html" data-nav="home">Home</a>
-      <a href="/gallery.html" data-nav="gallery">Gallery</a>
-      <a href="/about.html" data-nav="about">About</a>
-      <a href="/contact.html" data-nav="contact">Contact</a>
+      <a href="/index.html">Home</a>
+      <a href="/gallery.html">Gallery</a>
+      <a href="/about.html">About</a>
+      <a href="/contact.html">Contact</a>
     </nav>
   </header>
 
@@ -67,66 +51,77 @@
     <p id="emptyMsg" class="empty" style="display:none">No photos found for this album.</p>
   </main>
 
-  <!-- One clean loader: works with ?slug= or ?album= and with multiple photos.js formats -->
   <script>
   (function(){
     const params = new URLSearchParams(location.search);
-    const slug = (params.get('slug') || params.get('album') || '').trim();   // e.g. "luna-19-07-25"
+    const slug = (params.get('slug') || params.get('album') || '').trim();  // e.g. "luna-19-07-25"
     const titleEl = document.getElementById('albumTitle');
     const metaEl  = document.getElementById('albumMeta');
     const gridEl  = document.getElementById('photo-grid');
     const emptyEl = document.getElementById('emptyMsg');
 
-    if (!slug){
-      titleEl.textContent = 'Album not specified';
-      emptyEl.style.display = 'block';
-      return;
-    }
+    if (!slug){ titleEl.textContent = 'Album not specified'; emptyEl.style.display='block'; return; }
 
     const base = `/assets/albums/${slug}`;
 
-    // Load that album's photos.js
+    // Load photos.js for this album
     const s = document.createElement('script');
     s.src = `${base}/photos.js`;
     s.onload = render;
-    s.onerror = () => {
-      titleEl.textContent = 'Album not found';
-      emptyEl.style.display = 'block';
-      console.error('Missing photos.js for', slug);
-    };
+    s.onerror = () => { titleEl.textContent = 'Album not found'; emptyEl.style.display='block'; };
     document.head.appendChild(s);
 
-    function render(){
-      // Accept any of these shapes:
-      //   window.PHOTOS = ["IMG_001.jpg", ...]
-      //   window.photos = ["IMG_001.jpg", ...]
-      //   window.NOCH_PHOTOS = { "<slug>": ["IMG_001.jpg", ...] }
-      let list = [];
-      if (Array.isArray(window.PHOTOS)) list = window.PHOTOS;
-      else if (Array.isArray(window.photos)) list = window.photos;
-      else if (window.NOCH_PHOTOS && Array.isArray(window.NOCH_PHOTOS[slug])) list = window.NOCH_PHOTOS[slug];
+    function normalize(list){
+      // Turn any supported shape into [{src, alt}]
+      return (list || []).map(item => {
+        if (typeof item === 'string') return { src: item, alt: '' };
+        if (item && typeof item === 'object') {
+          const src = item.src || item.file || item.path || '';
+          const alt = item.alt || '';
+          return { src, alt };
+        }
+        return null;
+      }).filter(Boolean).map(({src, alt}) => {
+        // If src is absolute (/ or http), keep it. If it starts with 'photos/', prefix base.
+        // Otherwise assume it's just a filename inside photos/.
+        const absolute = /^https?:\/\//i.test(src) || src.startsWith('/');
+        const prefixed = src.startsWith('photos/');
+        const finalSrc = absolute ? src : (prefixed ? `${base}/${src}` : `${base}/photos/${src}`);
+        return { src: finalSrc, alt };
+      });
+    }
 
-      if (!Array.isArray(list) || list.length === 0){
+    function render(){
+      // Accept: window.PHOTOS (array), window.photos (array), or window.NOCH_PHOTOS[slug]
+      let raw = [];
+      if (Array.isArray(window.PHOTOS)) raw = window.PHOTOS;
+      else if (Array.isArray(window.photos)) raw = window.photos;
+      else if (window.NOCH_PHOTOS && Array.isArray(window.NOCH_PHOTOS[slug])) raw = window.NOCH_PHOTOS[slug];
+
+      const files = normalize(raw);
+      if (files.length === 0){
         titleEl.textContent = slugToTitle(slug);
         emptyEl.style.display = 'block';
         return;
       }
 
       titleEl.textContent = slugToTitle(slug);
-      metaEl.textContent  = `${list.length} photos`;
+      metaEl.textContent = `${files.length} photos`;
 
-      gridEl.innerHTML = list.map(name => `
-        <figure><img loading="lazy" src="${base}/photos/${encodeURIComponent(name)}" alt=""></figure>
+      gridEl.innerHTML = files.map(f => `
+        <figure><img loading="lazy" src="${f.src}" alt="${escapeHtml(f.alt)}"></figure>
       `).join('');
     }
 
     function slugToTitle(s){
       const parts = s.split('-');
-      const words = [];
-      const nums  = [];
+      const words = [], nums = [];
       for (const p of parts) (/^\d+$/.test(p) ? nums : words).push(p);
       const name = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       return name + (nums.length ? ' — ' + nums.join(' ') : '');
+    }
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
   })();
   </script>
