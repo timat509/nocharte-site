@@ -1,1 +1,3 @@
 http://* https://:splat 301!
+http://* https://:splat 301!
+www.nocharte.com/* https://nocharte.com/:splat 301!
