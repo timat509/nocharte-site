@@ -453,3 +453,8 @@ body.home .home-logo { will-change: transform; }
   --corner: .50em;
   --stroke: .048em;
 }
+/* More gap under header on desktop */
+@media (min-width: 821px){
+  body.home .content.lowered{ padding-top: 10vh; }  /* was 4vh */
+  /* tweak 10vh to taste: 6–12vh usually looks great */
+}

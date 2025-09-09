@@ -1,0 +1,135 @@
+/* =========================================================
+   RESPONSIVE (phones & small tablets)
+   Everything here is scoped to <= 820px wide.
+   Desktop stays controlled by style.css.
+========================================================= */
+
+:root{
+  --mobile-header-h: 56px;     /* sticky header height on mobile */
+  --mobile-gap: 12px;          /* extra breathing room under header */
+}
+
+/* ===== Mobile header: sticky + hamburger ===== */
+@media (max-width: 820px){
+
+  .nav{
+    position: sticky; top: 0; z-index: 50;
+    height: var(--mobile-header-h);
+    padding: 0 16px;
+    display: flex; align-items: center;
+    background: rgba(0,0,0,.6);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+
+  .logo img{ height: 28px; width: auto; }
+
+  /* Hamburger */
+  .nav-toggle{
+    display: inline-flex;
+    margin-left: auto;
+    width: 40px; height: 40px;
+    border: 0; background: transparent; padding: 0;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 6px; cursor: pointer;
+  }
+  .nav-toggle span{
+    width: 22px; height: 2px; background: #fff; border-radius: 2px;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+
+  /* Slide-down panel (hidden by default) */
+  .links{
+    position: fixed; inset: var(--mobile-header-h) 0 0 0;
+    display: none; flex-direction: column;
+    background: rgba(0,0,0,.96);
+    padding: 16px; gap: 4px;
+  }
+  .links a{
+    padding: 12px 8px;
+    font-size: 18px; font-weight: 700;
+  }
+
+  /* Open state */
+  .nav.open .links{ display: flex; }
+  .nav.open .nav-toggle[aria-expanded="true"] span:nth-child(1){
+    transform: translateY(8px) rotate(45deg);
+  }
+  .nav.open .nav-toggle[aria-expanded="true"] span:nth-child(2){
+    opacity: 0;
+  }
+  .nav.open .nav-toggle[aria-expanded="true"] span:nth-child(3){
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  /* Avoid background scroll when menu open */
+  body.menu-open{ overflow: hidden; }
+
+  /* Push first section below the sticky header */
+  .hero{ padding-top: calc(var(--mobile-header-h) + var(--mobile-gap)); }
+}
+
+/* ===== Home hero: mobile layout tweaks ===== */
+@media (max-width: 820px){
+  /* Hide the huge “N” art on small screens to keep copy readable */
+  body.home .logo-holder{ display: none; }
+
+  /* Headline sizing & spacing */
+  body.home .headline .hword{ font-size: clamp(34px, 10.5vw, 80px); }
+  body.home .ind-1{ margin-left: 3vw; }
+  body.home .ind-2{ margin-left: 6vw; }
+  body.home .content.lowered{ padding-top: 8vh; }
+
+  /* Scroll cue a bit higher */
+  body.home .scrolldown{ bottom: 9vh; }
+}
+
+/* ===== Featured section cards ===== */
+@media (max-width: 820px){
+  .featured__inner{ padding: 0 5vw; }
+  .grid{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+  .art{ aspect-ratio: 4 / 3; }
+  .meta{ padding: 12px 12px; }
+  .meta strong{ font-size: 1rem; }
+  .meta span{ font-size: .9rem; opacity: .85; }
+  .brand-lock{ display: none; } /* simplify on phones */
+}
+
+/* ===== Vision / Mission blocks (stacked) ===== */
+@media (max-width: 820px){
+  .vm-section{ padding: 40px 0; }
+  .vm-section .container{ width: 92%; }
+  .vm-row,
+  .vm-row--reverse{
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding-block: 18px;
+  }
+  .vm-row--reverse .vm-copy,
+  .vm-row--reverse .vm-media{ order: 0; }
+  .vm-art{ max-width: 100%; margin-inline: 0; aspect-ratio: 4 / 3; }
+}
+
+/* ===== Album & Gallery pages: account for sticky header ===== */
+@media (max-width: 820px){
+  .page-album .wrap,
+  .page-gallery .wrap,
+  .page-about .wrap,
+  .page-contact .wrap{
+    padding-top: calc(var(--mobile-header-h) + var(--mobile-gap));
+    width: 92%;
+  }
+
+  /* Album grid image height a bit smaller on phones */
+  .page-album .grid img{ height: 220px; object-fit: cover; }
+}
+
+/* ===== Tiny phones (<= 390px): tighten a bit more ===== */
+@media (max-width: 390px){
+  .logo img{ height: 24px; }
+
+  body.home .headline .hword{ font-size: clamp(30px, 11.5vw, 72px); }
+  body.home .content.lowered{ padding-top: 7vh; }
+
+  .links a{ font-size: 17px; }
+}
