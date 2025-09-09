@@ -1,4 +1,21 @@
 /* ===== Mobile-first header & layout tweaks ===== */
+/* Mobile first hard overrides */
+@media (max-width: 820px){
+  /* Hide link row by default on phones */
+  .nav .links{ display: none !important; }
+
+  /* Show when menu is opened */
+  .nav.open .links{ display: flex !important; }
+
+  /* Make sure the hamburger is visible on phones */
+  .nav-toggle{ display: inline-flex !important; }
+}
+
+/* Desktop keeps classic layout */
+@media (min-width: 821px){
+  .nav-toggle{ display: none !important; }
+  .links{ display: flex !important; }
+}
 @media (max-width: 820px){
   /* Sticky translucent header on mobile */
   .nav{
