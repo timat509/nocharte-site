@@ -95,159 +95,158 @@
 
   <!-- Loader + Lightbox logic -->
   <script>
-  (function(){
-    const params = new URLSearchParams(location.search);
-    const slug = (params.get('slug') || params.get('album') || '').trim();
-    const titleEl = document.getElementById('albumTitle');
-    const metaEl  = document.getElementById('albumMeta');
-    const gridEl  = document.getElementById('photo-grid');
-    const emptyEl = document.getElementById('emptyMsg');
-    if (!slug){ titleEl.textContent='Album not specified'; emptyEl.style.display='block'; return; }
+(function(){
+  const params = new URLSearchParams(location.search);
+  const slug = (params.get('slug') || params.get('album') || '').trim();
+  const titleEl = document.getElementById('albumTitle');
+  const metaEl  = document.getElementById('albumMeta');
+  const gridEl  = document.getElementById('photo-grid');
+  const emptyEl = document.getElementById('emptyMsg');
+  if (!slug){ titleEl.textContent='Album not specified'; emptyEl.style.display='block'; return; }
 
-    const base = `/assets/albums/${slug}`;
-    let files = [];      // normalized [{src, alt}]
-    let current = 0;     // current lightbox index
+  const base = `/assets/albums/${slug}`;
+  let files = [];      // normalized [{src, alt}]
+  let current = 0;     // current lightbox index
 
-    // Load photos.js for this album
-    const s = document.createElement('script');
-    s.src = `${base}/photos.js`;
-    s.onload = render;
-    s.onerror = () => { titleEl.textContent='Album not found'; emptyEl.style.display='block'; };
-    document.head.appendChild(s);
+  // Load photos.js for this album
+  const s = document.createElement('script');
+  s.src = `${base}/photos.js`;
+  s.onload = render;
+  s.onerror = () => { titleEl.textContent='Album not found'; emptyEl.style.display='block'; };
+  document.head.appendChild(s);
 
-    function normalize(list){
-      return (list || []).map(item => {
-        if (typeof item === 'string') return { src: item, alt: '' };
-        if (item && typeof item === 'object') {
-          const src = item.src || item.file || item.path || '';
-          return { src, alt: item.alt || '' };
-        }
-        return null;
-      }).filter(Boolean).map(({src, alt}) => {
-        const absolute = /^https?:\/\//i.test(src) || src.startsWith('/');
-        const prefixed = src.startsWith('photos/');
-        const finalSrc = absolute ? src : (prefixed ? `${base}/${src}` : `${base}/photos/${src}`);
-        return { src: finalSrc, alt };
-      });
-    }
-
-    function render(){
-      // Accept window.PHOTOS / window.photos / window.NOCH_PHOTOS[slug]
-      let raw = [];
-      if (Array.isArray(window.PHOTOS)) raw = window.PHOTOS;
-      else if (Array.isArray(window.photos)) raw = window.photos;
-      else if (window.NOCH_PHOTOS && Array.isArray(window.NOCH_PHOTOS[slug])) raw = window.NOCH_PHOTOS[slug];
-
-      files = normalize(raw);
-      if (!files.length){ titleEl.textContent = slugToTitle(slug); emptyEl.style.display='block'; return; }
-
-      titleEl.textContent = slugToTitle(slug);
-      metaEl.textContent  = `${files.length} photos`;
-
-      gridEl.innerHTML = files.map((f,i) => `
-        <figure data-idx="${i}">
-          <img loading="lazy" decoding="async" src="${f.src}" alt="${escapeHtml(f.alt)}">
-        </figure>
-      `).join('');
-
-      // click to open
-      gridEl.addEventListener('click', (e) => {
-        const fig = e.target.closest('figure');
-        if (!fig) return;
-        const idx = Number(fig.dataset.idx || 0);
-        openLightbox(idx);
-      });
-    }
-
-    /* ---------- Lightbox ---------- */
-    const lb   = document.getElementById('lightbox');
-    const lbImg= document.getElementById('lb-img');
-    const lbCap= document.getElementById('lb-cap');
-    const btnPrev = document.getElementById('lb-prev');
-    const btnNext = document.getElementById('lb-next');
-    const btnClose= document.getElementById('lb-close');
-
-    function openLightbox(i){
-      if (!files.length) return;
-      current = clamp(i, 0, files.length-1);
-      show(current);
-      lb.classList.add('open');
-      lb.setAttribute('aria-hidden','false');
-      btnClose.focus();
-      addEvents();
-    }
-    function closeLightbox(){
-      lb.classList.remove('open');
-      lb.setAttribute('aria-hidden','true');
-      removeEvents();
-    }
-    function show(i){
-      current = clamp(i, 0, files.length-1);
-      const f = files[current];
-      lbImg.src = f.src;
-      lbImg.alt = f.alt || '';
-      lbCap.textContent = f.alt || '';
-      // preload neighbors
-      preload(getNextIdx(+1));
-      preload(getNextIdx(-1));
-    }
-    function next(){ show(getNextIdx(+1)); }
-    function prev(){ show(getNextIdx(-1)); }
-    function getNextIdx(dir){ return (current + dir + files.length) % files.length; }
-    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-    function preload(i){ const img = new Image(); img.src = files[i].src; }
-
-    // events
-    function onKey(e){
-      if (lb.classList.contains('open')) {
-        if (e.key === 'Escape') closeLightbox();
-        else if (e.key === 'ArrowRight') next();
-        else if (e.key === 'ArrowLeft')  prev();
+  function normalize(list){
+    return (list || []).map(item => {
+      if (typeof item === 'string') return { src: item, alt: '' };
+      if (item && typeof item === 'object') {
+        const src = item.src || item.file || item.path || '';
+        return { src, alt: item.alt || '' };
       }
-    }
-    let touchX = null, touchY = null;
-    function onTouchStart(e){ const t = e.touches[0]; touchX=t.clientX; touchY=t.clientY; }
-    function onTouchEnd(e){
-      if (touchX === null) return;
-      const t = e.changedTouches[0];
-      const dx = t.clientX - touchX;
-      const dy = t.clientY - touchY;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { dx > 0 ? prev() : next(); }
-      touchX = touchY = null;
-    }
-    function onBackdrop(e){
-      // close if clicked outside the image/buttons
-      const withinControls = e.target.closest('.lb-img, .lb-btn, .lb-close');
-      if (!withinControls) closeLightbox();
-    }
-    function addEvents(){
-      document.addEventListener('keydown', onKey);
-      lb.addEventListener('click', onBackdrop);
-      lb.addEventListener('touchstart', onTouchStart, {passive:true});
-      lb.addEventListener('touchend', onTouchEnd, {passive:true});
-    }
-    function removeEvents(){
-      document.removeEventListener('keydown', onKey);
-      lb.removeEventListener('click', onBackdrop);
-      lb.removeEventListener('touchstart', onTouchStart);
-      lb.removeEventListener('touchend', onTouchEnd);
-    }
+      return null;
+    }).filter(Boolean).map(({src, alt}) => {
+      const absolute = /^https?:\/\//i.test(src) || src.startsWith('/');
+      const prefixed = src.startsWith('photos/');
+      const finalSrc = absolute ? src : (prefixed ? `${base}/${src}` : `${base}/photos/${src}`);
+      return { src: finalSrc, alt };
+    });
+  }
 
-    btnPrev.addEventListener('click', prev);
-    btnNext.addEventListener('click', next);
-    btnClose.addEventListener('click', closeLightbox);
+  function render(){
+    // Accept window.PHOTOS / window.photos / window.NOCH_PHOTOS[slug]
+    let raw = [];
+    if (Array.isArray(window.PHOTOS)) raw = window.PHOTOS;
+    else if (Array.isArray(window.photos)) raw = window.photos;
+    else if (window.NOCH_PHOTOS && Array.isArray(window.NOCH_PHOTOS[slug])) raw = window.NOCH_PHOTOS[slug];
 
-    /* ---------- Utils ---------- */
-    function slugToTitle(s){
-      const parts = s.split('-'); const words=[], nums=[];
-      for(const p of parts){ (/^\d+$/.test(p)?nums:words).push(p); }
-      const name = words.map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
-      return name + (nums.length ? ' — ' + nums.join(' ') : '');
-    }
-    function escapeHtml(str){
-      return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-  })();
-  </script>
+    files = normalize(raw);
+    if (!files.length){ titleEl.textContent = slugToTitle(slug); emptyEl.style.display='block'; return; }
+
+    titleEl.textContent = slugToTitle(slug);
+    metaEl.textContent  = `${files.length} photos`;
+
+    gridEl.innerHTML = files.map((f,i) => `
+      <figure data-idx="${i}" role="button" tabindex="0" style="cursor:zoom-in">
+        <img loading="lazy" decoding="async" src="${f.src}" alt="${escapeHtml(f.alt)}">
+      </figure>
+    `).join('');
+
+    // Bind clicks directly to each figure (more robust than delegation)
+    const figures = Array.from(gridEl.querySelectorAll('figure[data-idx]'));
+    figures.forEach(fig => {
+      const idx = Number(fig.dataset.idx || 0);
+      fig.addEventListener('click', () => openLightbox(idx));
+      fig.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(idx); }
+      });
+    });
+  }
+
+  /* ---------- Lightbox ---------- */
+  const lb   = document.getElementById('lightbox');
+  const lbImg= document.getElementById('lb-img');
+  const lbCap= document.getElementById('lb-cap');
+  const btnPrev = document.getElementById('lb-prev');
+  const btnNext = document.getElementById('lb-next');
+  const btnClose= document.getElementById('lb-close');
+
+  function openLightbox(i){
+    if (!files.length) return;
+    current = clamp(i, 0, files.length-1);
+    show(current);
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden','false');
+    btnClose.focus();
+    addEvents();
+  }
+  function closeLightbox(){
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden','true');
+    removeEvents();
+  }
+  function show(i){
+    current = clamp(i, 0, files.length-1);
+    const f = files[current];
+    lbImg.src = f.src;
+    lbImg.alt = f.alt || '';
+    lbCap.textContent = f.alt || '';
+    preload(getNextIdx(+1));
+    preload(getNextIdx(-1));
+  }
+  function next(){ show(getNextIdx(+1)); }
+  function prev(){ show(getNextIdx(-1)); }
+  function getNextIdx(dir){ return (current + dir + files.length) % files.length; }
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+  function preload(i){ const img = new Image(); img.src = files[i].src; }
+
+  function onKey(e){
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') next();
+    else if (e.key === 'ArrowLeft')  prev();
+  }
+  let touchX = null, touchY = null;
+  function onTouchStart(e){ const t = e.touches[0]; touchX=t.clientX; touchY=t.clientY; }
+  function onTouchEnd(e){
+    if (touchX === null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchX;
+    const dy = t.clientY - touchY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { dx > 0 ? prev() : next(); }
+    touchX = touchY = null;
+  }
+  function onBackdrop(e){
+    // close if clicked outside the image/buttons
+    const withinControls = e.target.closest('.lb-img, .lb-btn, .lb-close');
+    if (!withinControls) closeLightbox();
+  }
+  function addEvents(){
+    document.addEventListener('keydown', onKey);
+    lb.addEventListener('click', onBackdrop);
+    lb.addEventListener('touchstart', onTouchStart, {passive:true});
+    lb.addEventListener('touchend', onTouchEnd, {passive:true});
+  }
+  function removeEvents(){
+    document.removeEventListener('keydown', onKey);
+    lb.removeEventListener('click', onBackdrop);
+    lb.removeEventListener('touchstart', onTouchStart);
+    lb.removeEventListener('touchend', onTouchEnd);
+  }
+
+  btnPrev.addEventListener('click', prev);
+  btnNext.addEventListener('click', next);
+  btnClose.addEventListener('click', closeLightbox);
+
+  /* ---------- Utils ---------- */
+  function slugToTitle(s){
+    const parts = s.split('-'); const words=[], nums=[];
+    for(const p of parts){ (/^\d+$/.test(p)?nums:words).push(p); }
+    const name = words.map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
+    return name + (nums.length ? ' — ' + nums.join(' ') : '');
+  }
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+})();
+</script>
 </body>
 </html>
