@@ -141,3 +141,7 @@
   body.home .headline .hword{ font-size: clamp(30px, 11.5vw, 72px); }
   body.home .content.lowered{ padding-top: 7vh; }
 }
+@media (max-width: 820px){
+  body.home .logo-holder{ padding-right: 8vw; }          /* push N a bit right */
+  body.home .home-logo{ width: clamp(200px, 46vw, 420px); } /* slightly smaller range */
+}
