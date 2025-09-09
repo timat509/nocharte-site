@@ -5,8 +5,8 @@
 ========================================================= */
 
 :root{
-  --mobile-header-h: 56px;     /* sticky header height on mobile */
-  --mobile-gap: 12px;          /* extra breathing room under header */
+  --mobile-header-h: 56px;    /* sticky header height on mobile */
+  --mobile-gap: 12px;         /* breathing room under header */
 }
 
 /* ===== Mobile header: sticky + hamburger ===== */
@@ -22,7 +22,9 @@
     backdrop-filter: blur(6px);
   }
 
-  .logo img{ height: 28px; width: auto; }
+  /* show the small header logo on phones */
+  .nav .logo{ display:flex; align-items:center; }
+  .nav .logo img{ height: 28px; width: auto; }
 
   /* Hamburger */
   .nav-toggle{
@@ -71,14 +73,24 @@
 
 /* ===== Home hero: mobile layout tweaks ===== */
 @media (max-width: 820px){
-  /* Hide the huge “N” art on small screens to keep copy readable */
-  body.home .logo-holder{ display: none; }
+  /* Show the BIG “N” again on phones */
+  body.home .logo-holder{
+    display: flex !important;
+    justify-content: flex-end;
+    padding-top: 5vh;
+    padding-right: 4vw;
+  }
+  body.home .home-logo{
+    width: clamp(180px, 52vw, 420px);
+    height: auto;
+    opacity: 1; filter: none;
+  }
 
   /* Headline sizing & spacing */
   body.home .headline .hword{ font-size: clamp(34px, 10.5vw, 80px); }
   body.home .ind-1{ margin-left: 3vw; }
   body.home .ind-2{ margin-left: 6vw; }
-  body.home .content.lowered{ padding-top: 8vh; }
+  body.home .content.lowered{ padding-top: 6vh; }
 
   /* Scroll cue a bit higher */
   body.home .scrolldown{ bottom: 9vh; }
@@ -110,7 +122,7 @@
   .vm-art{ max-width: 100%; margin-inline: 0; aspect-ratio: 4 / 3; }
 }
 
-/* ===== Album & Gallery pages: account for sticky header ===== */
+/* ===== Album, Gallery, About, Contact: account for sticky header ===== */
 @media (max-width: 820px){
   .page-album .wrap,
   .page-gallery .wrap,
@@ -126,14 +138,8 @@
 
 /* ===== Tiny phones (<= 390px): tighten a bit more ===== */
 @media (max-width: 390px){
-  .logo img{ height: 24px; }
-
+  .nav .logo img{ height: 24px; }
   body.home .headline .hword{ font-size: clamp(30px, 11.5vw, 72px); }
   body.home .content.lowered{ padding-top: 7vh; }
-
   .links a{ font-size: 17px; }
-}
-/* Phones/tablets: hide the small N logo in the header */
-@media (max-width: 820px){
-  .nav .logo{ display:none; }
 }
