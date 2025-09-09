@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Skip intro when coming from internal pages -->
-<script>
-(function(){
-  try {
-    localStorage.setItem('nocharte_intro_seen','1');
-    sessionStorage.setItem('nocharte_intro_played','1');
-  } catch(e){}
-})();
-</script>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NOCHARTE — Album</title>
+
+  <!-- Skip intro when coming from internal pages -->
+  <script>
+  (function(){
+    try {
+      localStorage.setItem('nocharte_intro_seen','1');
+      sessionStorage.setItem('nocharte_intro_played','1');
+    } catch(e){}
+  })();
+  </script>
 
   <link href="https://fonts.cdnfonts.com/css/glacial-indifference" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 
   <style>
+    /* --- Page styles --- */
     body.page-album { background:#000; color:#f5f5f7; }
     .wrap { width:min(1200px,92%); margin:0 auto; padding:clamp(28px,5vw,44px) 0; }
     .album-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
@@ -26,28 +27,46 @@
     .album-title{ font-size:clamp(22px,4vw,34px); font-weight:800; letter-spacing:.02em; color:#fff }
     .album-meta{ opacity:.8 }
     .grid{ display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
-    .grid figure{ margin:0; overflow:hidden; border-radius:12px; background:#0d0d0f; border:1px solid rgba(255,255,255,.06); }
+    .grid figure{ margin:0; overflow:hidden; border-radius:12px; background:#0d0d0f; border:1px solid rgba(255,255,255,.06); cursor:zoom-in; }
     .grid img{ width:100%; height:280px; object-fit:cover; display:block; background:#0b0b0b; }
     .empty { padding:40px 0; opacity:.8 }
     .back { display:inline-block; margin-right:auto; padding:10px 14px; border:1px solid rgba(255,255,255,.2);
       border-radius:999px; text-decoration:none; font-weight:700; color:#f5f5f7 }
     .back:hover{ background:#fff; color:#000 }
     @media (max-width:640px){ .album-head{ flex-direction:column; align-items:flex-start } .grid img{ height:220px; } }
+
+    /* --- Lightbox --- */
+    .lb{ position:fixed; inset:0; background:rgba(0,0,0,.92); display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:9999; }
+    .lb.open{ opacity:1; pointer-events:auto; }
+    .lb-inner{ position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:40px; box-sizing:border-box; }
+    .lb-img{ max-width:96vw; max-height:86vh; width:auto; height:auto; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.6); background:#0b0b0b; }
+    .lb-cap{ position:fixed; left:0; right:0; bottom:20px; text-align:center; font-size:.95rem; opacity:.85; padding:0 20px; }
+    .lb-btn{ position:fixed; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.06); color:#fff; display:grid; place-items:center; cursor:pointer; user-select:none; }
+    .lb-prev{ left:16px; }
+    .lb-next{ right:16px; }
+    .lb-close{ position:fixed; top:16px; right:16px; width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.08); color:#fff; font-size:20px; line-height:0; display:grid; place-items:center; cursor:pointer; }
+    .lb-btn:focus, .lb-close:focus{ outline:2px solid #fff3; outline-offset:2px; }
+    @media (max-width:640px){
+      .lb-inner{ padding:20px; }
+      .lb-img{ max-width:100vw; max-height:80vh; }
+    }
   </style>
 </head>
 <body class="page-album">
+  <!-- Header -->
   <header class="nav">
     <a class="logo" href="/index.html?skip-intro=1" aria-label="NOCHARTE Home">
-  <img src="/assets/web/logohome.png" alt="NOCHARTE">
-</a>
-
-<nav class="links" role="navigation">
-  <a href="/index.html?skip-intro=1" data-nav="home">Home</a>
-  <a href="/gallery.html" data-nav="gallery">Gallery</a>
-  <a href="/about.html" data-nav="about">About</a>
-  <a href="/contact.html" data-nav="contact">Contact</a>
-</nav>
-
+      <img src="/assets/web/logohome.png" alt="NOCHARTE">
+    </a>
+    <nav class="links" role="navigation">
+      <a href="/index.html?skip-intro=1" data-nav="home">Home</a>
+      <a href="/gallery.html" data-nav="gallery">Gallery</a>
+      <a href="/about.html" data-nav="about">About</a>
+      <a href="/contact.html" data-nav="contact">Contact</a>
+    </nav>
   </header>
 
   <main class="wrap">
@@ -63,39 +82,48 @@
     <p id="emptyMsg" class="empty" style="display:none">No photos found for this album.</p>
   </main>
 
+  <!-- Lightbox overlay -->
+  <div id="lightbox" class="lb" aria-hidden="true" role="dialog" aria-label="Image viewer">
+    <div class="lb-inner">
+      <img id="lb-img" class="lb-img" alt="" />
+    </div>
+    <div id="lb-cap" class="lb-cap"></div>
+    <button type="button" id="lb-prev" class="lb-btn lb-prev" aria-label="Previous (←)">❮</button>
+    <button type="button" id="lb-next" class="lb-btn lb-next" aria-label="Next (→)">❯</button>
+    <button type="button" id="lb-close" class="lb-close" aria-label="Close (Esc)">✕</button>
+  </div>
+
+  <!-- Loader + Lightbox logic -->
   <script>
   (function(){
     const params = new URLSearchParams(location.search);
-    const slug = (params.get('slug') || params.get('album') || '').trim();  // e.g. "luna-19-07-25"
+    const slug = (params.get('slug') || params.get('album') || '').trim();
     const titleEl = document.getElementById('albumTitle');
     const metaEl  = document.getElementById('albumMeta');
     const gridEl  = document.getElementById('photo-grid');
     const emptyEl = document.getElementById('emptyMsg');
-
-    if (!slug){ titleEl.textContent = 'Album not specified'; emptyEl.style.display='block'; return; }
+    if (!slug){ titleEl.textContent='Album not specified'; emptyEl.style.display='block'; return; }
 
     const base = `/assets/albums/${slug}`;
+    let files = [];      // normalized [{src, alt}]
+    let current = 0;     // current lightbox index
 
     // Load photos.js for this album
     const s = document.createElement('script');
     s.src = `${base}/photos.js`;
     s.onload = render;
-    s.onerror = () => { titleEl.textContent = 'Album not found'; emptyEl.style.display='block'; };
+    s.onerror = () => { titleEl.textContent='Album not found'; emptyEl.style.display='block'; };
     document.head.appendChild(s);
 
     function normalize(list){
-      // Turn any supported shape into [{src, alt}]
       return (list || []).map(item => {
         if (typeof item === 'string') return { src: item, alt: '' };
         if (item && typeof item === 'object') {
           const src = item.src || item.file || item.path || '';
-          const alt = item.alt || '';
-          return { src, alt };
+          return { src, alt: item.alt || '' };
         }
         return null;
       }).filter(Boolean).map(({src, alt}) => {
-        // If src is absolute (/ or http), keep it. If it starts with 'photos/', prefix base.
-        // Otherwise assume it's just a filename inside photos/.
         const absolute = /^https?:\/\//i.test(src) || src.startsWith('/');
         const prefixed = src.startsWith('photos/');
         const finalSrc = absolute ? src : (prefixed ? `${base}/${src}` : `${base}/photos/${src}`);
@@ -104,32 +132,116 @@
     }
 
     function render(){
-      // Accept: window.PHOTOS (array), window.photos (array), or window.NOCH_PHOTOS[slug]
+      // Accept window.PHOTOS / window.photos / window.NOCH_PHOTOS[slug]
       let raw = [];
       if (Array.isArray(window.PHOTOS)) raw = window.PHOTOS;
       else if (Array.isArray(window.photos)) raw = window.photos;
       else if (window.NOCH_PHOTOS && Array.isArray(window.NOCH_PHOTOS[slug])) raw = window.NOCH_PHOTOS[slug];
 
-      const files = normalize(raw);
-      if (files.length === 0){
-        titleEl.textContent = slugToTitle(slug);
-        emptyEl.style.display = 'block';
-        return;
-      }
+      files = normalize(raw);
+      if (!files.length){ titleEl.textContent = slugToTitle(slug); emptyEl.style.display='block'; return; }
 
       titleEl.textContent = slugToTitle(slug);
-      metaEl.textContent = `${files.length} photos`;
+      metaEl.textContent  = `${files.length} photos`;
 
-      gridEl.innerHTML = files.map(f => `
-        <figure><img loading="lazy" src="${f.src}" alt="${escapeHtml(f.alt)}"></figure>
+      gridEl.innerHTML = files.map((f,i) => `
+        <figure data-idx="${i}">
+          <img loading="lazy" decoding="async" src="${f.src}" alt="${escapeHtml(f.alt)}">
+        </figure>
       `).join('');
+
+      // click to open
+      gridEl.addEventListener('click', (e) => {
+        const fig = e.target.closest('figure');
+        if (!fig) return;
+        const idx = Number(fig.dataset.idx || 0);
+        openLightbox(idx);
+      });
     }
 
+    /* ---------- Lightbox ---------- */
+    const lb   = document.getElementById('lightbox');
+    const lbImg= document.getElementById('lb-img');
+    const lbCap= document.getElementById('lb-cap');
+    const btnPrev = document.getElementById('lb-prev');
+    const btnNext = document.getElementById('lb-next');
+    const btnClose= document.getElementById('lb-close');
+
+    function openLightbox(i){
+      if (!files.length) return;
+      current = clamp(i, 0, files.length-1);
+      show(current);
+      lb.classList.add('open');
+      lb.setAttribute('aria-hidden','false');
+      btnClose.focus();
+      addEvents();
+    }
+    function closeLightbox(){
+      lb.classList.remove('open');
+      lb.setAttribute('aria-hidden','true');
+      removeEvents();
+    }
+    function show(i){
+      current = clamp(i, 0, files.length-1);
+      const f = files[current];
+      lbImg.src = f.src;
+      lbImg.alt = f.alt || '';
+      lbCap.textContent = f.alt || '';
+      // preload neighbors
+      preload(getNextIdx(+1));
+      preload(getNextIdx(-1));
+    }
+    function next(){ show(getNextIdx(+1)); }
+    function prev(){ show(getNextIdx(-1)); }
+    function getNextIdx(dir){ return (current + dir + files.length) % files.length; }
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+    function preload(i){ const img = new Image(); img.src = files[i].src; }
+
+    // events
+    function onKey(e){
+      if (lb.classList.contains('open')) {
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowRight') next();
+        else if (e.key === 'ArrowLeft')  prev();
+      }
+    }
+    let touchX = null, touchY = null;
+    function onTouchStart(e){ const t = e.touches[0]; touchX=t.clientX; touchY=t.clientY; }
+    function onTouchEnd(e){
+      if (touchX === null) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - touchX;
+      const dy = t.clientY - touchY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { dx > 0 ? prev() : next(); }
+      touchX = touchY = null;
+    }
+    function onBackdrop(e){
+      // close if clicked outside the image/buttons
+      const withinControls = e.target.closest('.lb-img, .lb-btn, .lb-close');
+      if (!withinControls) closeLightbox();
+    }
+    function addEvents(){
+      document.addEventListener('keydown', onKey);
+      lb.addEventListener('click', onBackdrop);
+      lb.addEventListener('touchstart', onTouchStart, {passive:true});
+      lb.addEventListener('touchend', onTouchEnd, {passive:true});
+    }
+    function removeEvents(){
+      document.removeEventListener('keydown', onKey);
+      lb.removeEventListener('click', onBackdrop);
+      lb.removeEventListener('touchstart', onTouchStart);
+      lb.removeEventListener('touchend', onTouchEnd);
+    }
+
+    btnPrev.addEventListener('click', prev);
+    btnNext.addEventListener('click', next);
+    btnClose.addEventListener('click', closeLightbox);
+
+    /* ---------- Utils ---------- */
     function slugToTitle(s){
-      const parts = s.split('-');
-      const words = [], nums = [];
-      for (const p of parts) (/^\d+$/.test(p) ? nums : words).push(p);
-      const name = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      const parts = s.split('-'); const words=[], nums=[];
+      for(const p of parts){ (/^\d+$/.test(p)?nums:words).push(p); }
+      const name = words.map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
       return name + (nums.length ? ' — ' + nums.join(' ') : '');
     }
     function escapeHtml(str){
