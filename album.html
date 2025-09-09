@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Skip intro when coming from internal pages -->
+<script>
+(function(){
+  try {
+    localStorage.setItem('nocharte_intro_seen','1');
+    sessionStorage.setItem('nocharte_intro_played','1');
+  } catch(e){}
+})();
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NOCHARTE — Album</title>
@@ -27,15 +37,17 @@
 </head>
 <body class="page-album">
   <header class="nav">
-    <a class="logo" href="/index.html" aria-label="NOCHARTE Home">
-      <img src="/assets/web/logohome.png" alt="NOCHARTE">
-    </a>
-    <nav class="links" role="navigation">
-      <a href="/index.html">Home</a>
-      <a href="/gallery.html">Gallery</a>
-      <a href="/about.html">About</a>
-      <a href="/contact.html">Contact</a>
-    </nav>
+    <a class="logo" href="/index.html?skip-intro=1" aria-label="NOCHARTE Home">
+  <img src="/assets/web/logohome.png" alt="NOCHARTE">
+</a>
+
+<nav class="links" role="navigation">
+  <a href="/index.html?skip-intro=1" data-nav="home">Home</a>
+  <a href="/gallery.html" data-nav="gallery">Gallery</a>
+  <a href="/about.html" data-nav="about">About</a>
+  <a href="/contact.html" data-nav="contact">Contact</a>
+</nav>
+
   </header>
 
   <main class="wrap">
