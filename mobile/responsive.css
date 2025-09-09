@@ -133,3 +133,7 @@
 
   .links a{ font-size: 17px; }
 }
+/* Phones/tablets: hide the small N logo in the header */
+@media (max-width: 820px){
+  .nav .logo{ display:none; }
+}
