@@ -393,7 +393,7 @@ body.home .scrolldown span{
   /* If your pages wrap content in .wrap, shrink that padding */
   .page-about .wrap,
   .page-contact .wrap{
-    padding-top: 28px !important;   /* try 20–40px range */
+    padding-top: 8px !important;   /* try 20–40px range */
   }
 
   /* If the first block has its own top margin (e.g., hero card), kill it */
