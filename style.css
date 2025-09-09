@@ -474,9 +474,16 @@ body.menu-open{ overflow: hidden; }            /* prevent background scroll */
   }
   .hero{ padding-top: 0; }
 }
-/* Hide hero N on small phones */
-@media (max-width: 640px){
-  body.home .logo-holder{ display: none !important; }
-  /* reclaim the space the N used to occupy */
-  body.home .content.lowered{ padding-top: 8vh; }
+/* Hide the small header N logo on phones so the mobile nav has space */
+@media (max-width: 820px){
+  .nav .logo,
+  .nav .brand{           /* covers pages that use .brand instead of .logo */
+    display: none !important;
+  }
+
+  /* keep header size tidy on mobile */
+  .nav{ height:56px; padding:0 16px; }
+
+  /* ensure the hero content doesn’t sit under the sticky header */
+  .hero{ padding-top:56px; }
 }
