@@ -474,3 +474,9 @@ body.menu-open{ overflow: hidden; }            /* prevent background scroll */
   }
   .hero{ padding-top: 0; }
 }
+/* Hide hero N on small phones */
+@media (max-width: 640px){
+  body.home .logo-holder{ display: none !important; }
+  /* reclaim the space the N used to occupy */
+  body.home .content.lowered{ padding-top: 8vh; }
+}
