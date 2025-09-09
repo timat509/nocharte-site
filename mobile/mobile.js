@@ -1,39 +1,28 @@
-// /mobile.js
-(function () {
+// Mobile header toggler
+document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('.nav');
   if (!header) return;
 
-  const toggle = header.querySelector('.nav-toggle');
-  const links = header.querySelector('.links');
+  const btn   = header.querySelector('.nav-toggle');
+  const panel = header.querySelector('.links');
+  if (!btn || !panel) return;
 
-  function openMenu() {
-    header.classList.add('open');
-    document.body.classList.add('menu-open');
-    toggle.setAttribute('aria-expanded', 'true');
-  }
-  function closeMenu() {
-    header.classList.remove('open');
-    document.body.classList.remove('menu-open');
-    toggle.setAttribute('aria-expanded', 'false');
-  }
+  const setOpen = (open) => {
+    header.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.classList.toggle('menu-open', open);
+  };
 
-  toggle?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    header.classList.contains('open') ? closeMenu() : openMenu();
+  btn.addEventListener('click', () => setOpen(!header.classList.contains('open')));
+  panel.addEventListener('click', (e) => {
+    if (e.target.closest('a')) setOpen(false); // close after navigating
   });
-
-  // Close when clicking outside the drawer
-  document.addEventListener('click', (e) => {
-    if (!header.classList.contains('open')) return;
-    const inside = header.contains(e.target) && (links.contains(e.target) || toggle.contains(e.target));
-    if (!inside) closeMenu();
-  });
-
-  // Close with ESC
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeMenu();
+    if (e.key === 'Escape') setOpen(false);
   });
 
-  // Close when choosing a link
-  links.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMenu));
-})();
+  // If resized back to desktop, make sure menu is closed
+  const mq = window.matchMedia('(min-width: 821px)');
+  const onChange = (e) => { if (e.matches) setOpen(false); };
+  mq.addEventListener ? mq.addEventListener('change', onChange) : mq.addListener(onChange);
+});
