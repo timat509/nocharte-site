@@ -5,23 +5,28 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>NOCHARTE — Intro</title>
 
-  <!-- Site styles (load first) -->
+  <!-- Site styles -->
   <link rel="stylesheet" href="/style.css" />
   <link rel="stylesheet" href="/responsive.css" />
 
-  <!-- Page-specific styles (keep AFTER the links so these override if needed) -->
+  <!-- Page-specific styles -->
   <style>
     :root{ --mag:#d403e0; --vio:#7d00ff; }
     *{ box-sizing:border-box }
     html,body{ height:100% }
-    body{ margin:0; background:#000; color:#fff; overflow:hidden;
-          font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif; }
-
+    body{
+      margin:0; background:#000; color:#fff; overflow:hidden;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;
+    }
     #stage{ position:fixed; inset:0; }
-    .hero-video{ position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover; object-position:center; background:#000; }
-    .poster{ position:absolute; inset:0; background:#000 center/cover no-repeat;
-      opacity:0; transition:opacity .3s ease; }
+    .hero-video{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; object-position:center; background:#000;
+    }
+    .poster{
+      position:absolute; inset:0; background:#000 center/cover no-repeat;
+      opacity:0; transition:opacity .3s ease;
+    }
     .skip{
       position:fixed; right:18px; bottom:18px; z-index:3;
       padding:10px 14px; border-radius:999px; font-weight:800;
@@ -36,11 +41,12 @@
     <!-- Optional poster image -->
     <div id="poster" class="poster" style="background-image:url('assets/intro-poster.jpg')"></div>
 
-    <!-- Your rendered animation -->
-    <video id="introVid" class="hero-video" playsinline muted autoplay preload="auto">
+    <!-- Video -->
     <video id="introVid" class="hero-video" playsinline webkit-playsinline muted autoplay preload="auto">
-
-      <source src="assets/web/intro.mp4"  type="video/mp4"  />
+      <!-- use WebM too if you have it:
+      <source src="assets/web/intro.webm" type="video/webm" />
+      -->
+      <source src="assets/web/intro.mp4" type="video/mp4" />
     </video>
 
     <a class="skip" href="index.html?skip-intro=1">Skip</a>
@@ -54,7 +60,11 @@
     const stage  = document.getElementById('stage');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    function markPlayed(){
+      try { sessionStorage.setItem('nocharte_intro_played','1'); } catch(e){}
+    }
     function go(){
+      markPlayed();
       stage.style.transition = 'opacity .45s ease';
       stage.style.opacity = '0';
       setTimeout(()=>location.replace(REDIRECT), 460);
@@ -65,7 +75,7 @@
       return;
     }
 
-    let posterTimer = setTimeout(()=>poster.style.opacity='1', 100);
+    let posterTimer = setTimeout(()=>poster.style.opacity='1', 120);
 
     function ensurePlay(){
       const p = video.play?.();
@@ -83,8 +93,6 @@
 
     // Failsafe in case 'ended' never fires
     setTimeout(()=>{ if (video.paused || isNaN(video.duration)) go(); }, 8000);
-
-    // Skip: default navigation is fine
   })();
   </script>
 </body>
