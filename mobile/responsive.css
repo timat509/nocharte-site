@@ -22,9 +22,8 @@
     backdrop-filter: blur(6px);
   }
 
-  /* show the small header logo on phones */
-  .nav .logo{ display:flex; align-items:center; }
-  .nav .logo img{ height: 28px; width: auto; }
+  /* HIDE the small header N logo on phones */
+  .nav .logo{ display:none !important; }
 
   /* Hamburger */
   .nav-toggle{
@@ -73,7 +72,7 @@
 
 /* ===== Home hero: mobile layout tweaks ===== */
 @media (max-width: 820px){
-  /* Show the BIG “N” again on phones */
+  /* SHOW the big hero “N” */
   body.home .logo-holder{
     display: flex !important;
     justify-content: flex-end;
@@ -81,7 +80,7 @@
     padding-right: 4vw;
   }
   body.home .home-logo{
-    width: clamp(180px, 52vw, 420px);
+    width: clamp(200px, 52vw, 460px);
     height: auto;
     opacity: 1; filter: none;
   }
@@ -138,8 +137,7 @@
 
 /* ===== Tiny phones (<= 390px): tighten a bit more ===== */
 @media (max-width: 390px){
-  .nav .logo img{ height: 24px; }
+  .links a{ font-size: 17px; }
   body.home .headline .hword{ font-size: clamp(30px, 11.5vw, 72px); }
   body.home .content.lowered{ padding-top: 7vh; }
-  .links a{ font-size: 17px; }
 }
