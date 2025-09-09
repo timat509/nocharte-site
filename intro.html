@@ -4,6 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>NOCHARTE — Intro</title>
+
+  <!-- Site styles (load first) -->
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/responsive.css" />
+
+  <!-- Page-specific styles (keep AFTER the links so these override if needed) -->
   <style>
     :root{ --mag:#d403e0; --vio:#7d00ff; }
     *{ box-sizing:border-box }
@@ -12,31 +18,17 @@
           font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif; }
 
     #stage{ position:fixed; inset:0; }
-
-    /* Fullscreen video */
-    .hero-video{
-      position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover; object-position:center; background:#000;
-    }
-
-    /* Optional poster while buffering (safe to delete if unused) */
-    .poster{
-      position:absolute; inset:0; background:#000 center/cover no-repeat;
-      opacity:0; transition:opacity .3s ease;
-    }
-
-    /* Skip */
+    .hero-video{ position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; object-position:center; background:#000; }
+    .poster{ position:absolute; inset:0; background:#000 center/cover no-repeat;
+      opacity:0; transition:opacity .3s ease; }
     .skip{
       position:fixed; right:18px; bottom:18px; z-index:3;
       padding:10px 14px; border-radius:999px; font-weight:800;
       background:linear-gradient(90deg,var(--mag),var(--vio)); color:#fff; text-decoration:none;
       box-shadow:0 12px 26px rgba(212,3,224,.25);
     }
-
-    /* Reduced motion: don’t play video, just brief hold then go */
-    @media (prefers-reduced-motion:reduce){
-      .hero-video{ display:none !important }
-    }
+    @media (prefers-reduced-motion:reduce){ .hero-video{ display:none !important } }
   </style>
 </head>
 <body>
@@ -46,7 +38,8 @@
 
     <!-- Your rendered animation -->
     <video id="introVid" class="hero-video" playsinline muted autoplay preload="auto">
-      <source src="assets/web/intro.mp4" type="video/webm" />
+    <video id="introVid" class="hero-video" playsinline webkit-playsinline muted autoplay preload="auto">
+
       <source src="assets/web/intro.mp4"  type="video/mp4"  />
     </video>
 
