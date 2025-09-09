@@ -385,3 +385,20 @@ body.home .scrolldown span{
     padding-top: calc(var(--nav-h) + var(--desktop-header-gap));
   }
 }
+/* =========================
+   Desktop: reduce top gap ONLY on About & Contact
+   (no changes on Home/Gallery/Album or mobile)
+========================= */
+@media (min-width: 821px){
+  /* If your pages wrap content in .wrap, shrink that padding */
+  .page-about .wrap,
+  .page-contact .wrap{
+    padding-top: 28px !important;   /* try 20–40px range */
+  }
+
+  /* If the first block has its own top margin (e.g., hero card), kill it */
+  .page-about main > :first-child,
+  .page-contact main > :first-child{
+    margin-top: 0 !important;
+  }
+}
