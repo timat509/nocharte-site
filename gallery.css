@@ -165,3 +165,15 @@
 }
 .page-gallery .card { display:block; user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent; }
 .page-gallery .card > * { pointer-events:none; } /* make the anchor itself receive the click */
+/* Desktop gap under the header on the Gallery page only */
+@media (min-width: 821px){
+  .page-gallery .wrap{
+    /* tweak this number to taste */
+    padding-top: calc(var(--nav-h) + 50px);
+  }
+
+  /* (optional) if your first block adds its own top margin, zero it */
+  .page-gallery main > :first-child{
+    margin-top: 0;
+  }
+}

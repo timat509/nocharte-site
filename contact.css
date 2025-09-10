@@ -217,3 +217,15 @@
 @media (max-width:760px){
   .page-contact .contact-hero.v2{ height:260px; padding:24px 6% }
 }
+/* Desktop gap under the header on the Contact page only */
+@media (min-width: 821px){
+  .page-contact .wrap{
+    /* tweak this number to taste */
+    padding-top: calc(var(--nav-h) + 24px);
+  }
+
+  /* (optional) if your first block adds its own top margin, zero it */
+  .page-contact main > :first-child{
+    margin-top: 0;
+  }
+}

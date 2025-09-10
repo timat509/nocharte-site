@@ -1,0 +1,12 @@
+/* Album page only — desktop gap under the absolute header */
+@media (min-width: 821px){
+  .page-album .wrap{
+    /* Adjust this to taste (e.g., 16–120px). */
+    padding-top: calc(var(--nav-h) + 70px);
+  }
+
+  /* If the first block has its own top margin, remove it */
+  .page-album main > :first-child{
+    margin-top: 0;
+  }
+}

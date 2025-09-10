@@ -286,4 +286,24 @@
   .page-about .cta-col{ gap: 10px; }
   .page-about .dot{ width: 48px; height: 48px; }  /* slightly smaller buttons */
 }
+/* Desktop-only: top gap under the absolute header */
+@media (min-width: 821px){
+  /* tweak this number to taste */
+  .wrap{
+    padding-top: calc(var(--nav-h) + 10px);
+  }
+  /* in case the first block adds its own top margin */
+  main > :first-child{ margin-top: 0 !important; }
+}
+/* Desktop gap under the header on the About page only */
+@media (min-width: 821px){
+  .page-about .wrap{
+    /* tweak this number to taste */
+    padding-top: calc(var(--nav-h) + 20px);
+  }
 
+  /* (optional) if your first block adds its own top margin, zero it */
+  .page-about main > :first-child{
+    margin-top: 0;
+  }
+}

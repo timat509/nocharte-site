@@ -38,7 +38,7 @@ html, body {
 
 /* =========================================================
    GLOBAL HEADER (desktop defaults)
-   – mobile header rules are in responsive.css
+   – mobile header rules live in responsive.css
 ========================================================= */
 .nav{
   position:absolute;             /* overlay on desktop */
@@ -152,9 +152,9 @@ body.home .content{
   display:flex; flex-direction:column; align-items:flex-start;
   gap:.08em; padding:0 8vw; max-width:min(1200px,92vw);
 }
-/* desktop: extra gap under header */
+/* desktop: extra gap under header (home only) */
 @media (min-width:821px){
-  body.home .content.lowered{ padding-top:10vh; } /* adjust 6–12vh to taste */
+  body.home .content.lowered{ padding-top:12vh; } /* adjust to taste */
 }
 
 body.home .headline{ display:flex; flex-direction:column; gap:.08em; line-height:.92; }
@@ -364,41 +364,4 @@ body.home .scrolldown span{
   body.home .ind-2{ margin-left:5vw; }
   body.home .content.lowered{ padding-top:8vh; }
   body.home .scrolldown{ bottom:9vh; }
-}
-/* ===== Desktop: add breathing room under the absolute header ===== */
-@media (min-width: 821px){
-  :root{
-    /* tune this number to taste */
-    --desktop-header-gap: clamp(24px, 4vw, 96px);
-  }
-
-  /* Generic: any page that uses .wrap (your subpages do) */
-  body:not(.home) .wrap{
-    padding-top: calc(var(--nav-h) + var(--desktop-header-gap));
-  }
-
-  /* Fallbacks: if a page's first container isn't .wrap, cover mains too */
-  .page-gallery main,
-  .page-about main,
-  .page-contact main,
-  .page-album main{
-    padding-top: calc(var(--nav-h) + var(--desktop-header-gap));
-  }
-}
-/* =========================
-   Desktop: reduce top gap ONLY on About & Contact
-   (no changes on Home/Gallery/Album or mobile)
-========================= */
-@media (min-width: 821px){
-  /* If your pages wrap content in .wrap, shrink that padding */
-  .page-about .wrap,
-  .page-contact .wrap{
-    padding-top: 20px !important;   /* try 20–40px range */
-  }
-
-  /* If the first block has its own top margin (e.g., hero card), kill it */
-  .page-about main > :first-child,
-  .page-contact main > :first-child{
-    margin-top: 0 !important;
-  }
 }
